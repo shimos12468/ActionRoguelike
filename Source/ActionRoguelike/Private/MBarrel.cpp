@@ -7,7 +7,10 @@ AMBarrel::AMBarrel()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	//RadialForce=CreateDefaultSubobject<URadialForceComponent>("Radial Force 1");
+	mesh = CreateDefaultSubobject<UStaticMeshComponent>("Explosive mesh");
+	RadialForce=CreateDefaultSubobject<URadialForceComponent>("Radial Force 1");
+	RadialForce->SetupAttachment(mesh);
+
 }
 
 // Called when the game starts or when spawned

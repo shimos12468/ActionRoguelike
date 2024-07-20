@@ -4,9 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "MBarrel.generated.h"
-
+#include "Components/StaticMeshComponent.h" 
 #include "PhysicsEngine/RadialForceComponent.h"
+#include "MBarrel.generated.h"
 UCLASS()
 class ACTIONROGUELIKE_API AMBarrel : public AActor
 {
@@ -20,7 +20,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-
+	UPROPERTY(EditAnywhere)
+		UStaticMeshComponent* mesh;
+	UPROPERTY(EditAnywhere)
+		URadialForceComponent* RadialForce;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
