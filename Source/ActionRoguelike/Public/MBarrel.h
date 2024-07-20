@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "MBarrel.generated.h"
 
+#include "PhysicsEngine/RadialForceComponent.h"
 UCLASS()
 class ACTIONROGUELIKE_API AMBarrel : public AActor
 {
@@ -18,6 +19,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
 
 public:	
 	// Called every frame

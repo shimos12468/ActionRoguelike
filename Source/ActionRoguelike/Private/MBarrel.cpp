@@ -2,13 +2,12 @@
 
 
 #include "MBarrel.h"
-
 // Sets default values
 AMBarrel::AMBarrel()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	//RadialForce=CreateDefaultSubobject<URadialForceComponent>("Radial Force 1");
 }
 
 // Called when the game starts or when spawned
