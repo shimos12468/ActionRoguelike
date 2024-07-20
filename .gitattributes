@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+D:/Mahmoud/Unreal[[:space:]]Learning/Professional[[:space:]]Game[[:space:]]Development[[:space:]]in[[:space:]]C++[[:space:]]and[[:space:]]Unreal[[:space:]]Engine/ActionRoguelike/Content/ParagonMinions/Characters/Global/MaterialLayers/Wood/T_TreeBark_D.uasset filter=lfs diff=lfs merge=lfs -text
+D:/Mahmoud/Unreal[[:space:]]Learning/Professional[[:space:]]Game[[:space:]]Development[[:space:]]in[[:space:]]C++[[:space:]]and[[:space:]]Unreal[[:space:]]Engine/ActionRoguelike/Content/ParagonMinions/Characters/Global/MaterialLayers/Wood/T_TreeBark_N.uasset filter=lfs diff=lfs merge=lfs -text
+D:/Mahmoud/Unreal[[:space:]]Learning/Professional[[:space:]]Game[[:space:]]Development[[:space:]]in[[:space:]]C++[[:space:]]and[[:space:]]Unreal[[:space:]]Engine/ActionRoguelike/Content/ParagonMinions/FX/Textures/Environment/T_RevaCliff_D.uasset filter=lfs diff=lfs merge=lfs -text
