@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "MInteractionComponent.h"
 // Sets default values
 AMCharacter::AMCharacter()
 {
@@ -13,6 +14,9 @@ AMCharacter::AMCharacter()
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>("SpringArmComp");
 	SpringArmComp->bUsePawnControlRotation = true;
 	SpringArmComp->SetupAttachment(RootComponent);
+
+
+	InteractionComp = CreateDefaultSubobject<UMInteractionComponent>("InteractionComp");
 
 	CameraComp = CreateDefaultSubobject<UCameraComponent>("CameraComp");
 	CameraComp->SetupAttachment(SpringArmComp);
@@ -46,8 +50,9 @@ void AMCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMCharacter::MoveRight);
 
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	//PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAction("PrimaryAttack",IE_Pressed, this,&AMCharacter::PrimaryAttack);
+	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &AMCharacter::PrimaryInteract);
 }
 
 void AMCharacter::MoveForward(float Value) {
@@ -75,13 +80,29 @@ void AMCharacter::MoveRight(float Value) {
 
 void AMCharacter::PrimaryAttack() {
 
+	PlayAnimMontage(AttackAnim);
+
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttrack, this, &AMCharacter::PrimaryAttack_TimeElapsed, 0.2f);
+
+}
+
+void AMCharacter::PrimaryAttack_TimeElapsed() {
+
 	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-	FTransform SpawnTM = FTransform( GetControlRotation(),HandLocation);
+	FTransform SpawnTM = FTransform(GetControlRotation(), HandLocation);
 
 	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride= ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+}
 
+
+void AMCharacter::PrimaryInteract() {
+
+	if (InteractionComp) {
+
+		InteractionComp->PrimaryInteract();
+	}
 
 }
