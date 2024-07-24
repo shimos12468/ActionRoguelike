@@ -6,17 +6,37 @@ AMBarrel::AMBarrel()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("Explosive mesh");
-	MeshComp->SetCollisionProfileName("PhysicsActor");
-	MeshComp->bUseDefaultCollision = true;
+	MeshComp->SetSimulatePhysics(true);
+	RootComponent = MeshComp;
+
+
+	
+	
 	RadialForceComp=CreateDefaultSubobject<URadialForceComponent>("Radial Force 1");
 	RadialForceComp->SetupAttachment(MeshComp);
+
+	RadialForceComp->SetAutoActivate(false);
+	
+	RadialForceComp->Radius = 750;
 
 	RadialForceComp->ImpulseStrength = 2500;
 
 	RadialForceComp->bImpulseVelChange = true;
+
+
 	RadialForceComp->AddCollisionChannelToAffect(ECC_WorldDynamic);
+	
+	
+}
+
+
+
+void AMBarrel::PostInitializeComponents() {
+	
+	Super::PostInitializeComponents();
+
 	MeshComp->OnComponentHit.AddDynamic(this, &AMBarrel::OnHit);
-	RootComponent = MeshComp;
+
 }
 
 // Called when the game starts or when spawned

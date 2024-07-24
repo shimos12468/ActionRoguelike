@@ -6,6 +6,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "MInteractionComponent.h"
+#include <Kismet/KismetMathLibrary.h>
 // Sets default values
 AMCharacter::AMCharacter()
 {
@@ -14,7 +15,6 @@ AMCharacter::AMCharacter()
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>("SpringArmComp");
 	SpringArmComp->bUsePawnControlRotation = true;
 	SpringArmComp->SetupAttachment(RootComponent);
-
 
 	InteractionComp = CreateDefaultSubobject<UMInteractionComponent>("InteractionComp");
 
@@ -88,12 +88,50 @@ void AMCharacter::PrimaryAttack() {
 
 void AMCharacter::PrimaryAttack_TimeElapsed() {
 
+	
+
+	FVector Start = CameraComp->GetComponentLocation();
+	FVector End = CameraComp->GetComponentLocation() + (GetControlRotation().Vector() * 5000);
+
+	FCollisionShape Shape;
+	Shape.SetSphere(20);
+
+	FHitResult Hit;
+
+	FCollisionObjectQueryParams CollisionParams;
+
+	CollisionParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	CollisionParams.AddObjectTypesToQuery(ECC_Pawn);
+	CollisionParams.AddObjectTypesToQuery(ECC_WorldStatic);
+
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+	
+
+	bool bBlockingHit = GetWorld()->SweepSingleByObjectType(Hit, Start, End, FQuat::Identity, CollisionParams, Shape,Params);
+
+	if (bBlockingHit) {
+
+		End = Hit.ImpactPoint;
+	}
+
+	//DrawDebugLine(GetWorld(), CameraComp->GetComponentLocation(), CameraComp->GetComponentLocation() + (GetControlRotation().Vector() * 5000),FColor::Red,true,2.00f,3.00f);
+
 	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-	FTransform SpawnTM = FTransform(GetControlRotation(), HandLocation);
+
+	//the first way
+	
+	//FRotator Rotation= UKismetMathLibrary::FindLookAtRotation(HandLocation, End);
+	
+	//the second way
+	FRotator Rotation = UKismetMathLibrary::MakeRotFromX(End - HandLocation);
+	
+	FTransform SpawnTM = FTransform(Rotation, HandLocation);
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
+	
+	SpawnParams.Instigator = this;
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
 }
 

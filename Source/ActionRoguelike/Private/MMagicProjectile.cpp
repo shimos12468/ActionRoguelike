@@ -5,6 +5,8 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include"Particles/ParticleSystemComponent.h"
+#include "Kismet/GameplayStatics.h"
+
 // Sets default values
 AMMagicProjectile::AMMagicProjectile()
 {
@@ -30,7 +32,26 @@ AMMagicProjectile::AMMagicProjectile()
 void AMMagicProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	SphereComp->IgnoreActorWhenMoving(GetInstigator(), true);
+	UE_LOG(LogTemp, Warning, TEXT("OtherActor: %s"), *GetNameSafe(GetInstigator()));
+}
+
+void AMMagicProjectile::PostInitializeComponents() {
+
+	Super::PostInitializeComponents();
+
+	SphereComp->OnComponentHit.AddDynamic(this, &AMMagicProjectile::OnHit);
+
+}
+
+void AMMagicProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) {
+
+	if (OtherActor != GetInstigator()) {
+
+		UE_LOG(LogTemp, Warning, TEXT("Differant Actor"));
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), EmittingEffect, GetActorLocation(),GetActorRotation());
+		Destroy(true);
+	}
 }
 
 // Called every frame
