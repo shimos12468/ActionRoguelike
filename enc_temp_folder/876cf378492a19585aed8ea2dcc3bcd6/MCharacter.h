@@ -22,13 +22,9 @@ protected:
 	TSubclassOf<AActor> ProjectileClass;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
-		TSubclassOf<AActor> ProjectileClass2;
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
 	UAnimMontage* AttackAnim;
 
 	FTimerHandle TimerHandle_PrimaryAttrack;
-	FTimerHandle TimerHandle_SecondaryAttrack;
 
 public:
 	// Sets default values for this character's properties
@@ -56,11 +52,6 @@ protected:
 	
 	void PrimaryAttack_TimeElapsed();
 	
-	void SecondaryAttack();
-
-	void SecondaryAttack_TimeElapsed();
-
-
 	void PrimaryInteract();
 public:	
 	// Called every frame

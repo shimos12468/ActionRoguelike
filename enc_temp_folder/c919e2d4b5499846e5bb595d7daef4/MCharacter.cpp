@@ -52,7 +52,6 @@ void AMCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAction("PrimaryAttack",IE_Pressed, this,&AMCharacter::PrimaryAttack);
-	PlayerInputComponent->BindAction("SecondaryAttack", IE_Pressed, this, &AMCharacter::SecondaryAttack);
 	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &AMCharacter::PrimaryInteract);
 }
 
@@ -86,16 +85,6 @@ void AMCharacter::PrimaryAttack() {
 	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttrack, this, &AMCharacter::PrimaryAttack_TimeElapsed, 0.2f);
 
 }
-
-
-void AMCharacter::SecondaryAttack() {
-
-	PlayAnimMontage(AttackAnim);
-
-	GetWorldTimerManager().SetTimer(TimerHandle_SecondaryAttrack, this, &AMCharacter::SecondaryAttack_TimeElapsed, 0.2f);
-
-}
-
 
 void AMCharacter::PrimaryAttack_TimeElapsed() {
 
@@ -145,59 +134,6 @@ void AMCharacter::PrimaryAttack_TimeElapsed() {
 	SpawnParams.Instigator = this;
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
 }
-
-
-
-void AMCharacter::SecondaryAttack_TimeElapsed() {
-
-
-
-	FVector Start = CameraComp->GetComponentLocation();
-	FVector End = CameraComp->GetComponentLocation() + (GetControlRotation().Vector() * 5000);
-
-	FCollisionShape Shape;
-	Shape.SetSphere(20);
-
-	FHitResult Hit;
-
-	FCollisionObjectQueryParams CollisionParams;
-
-	CollisionParams.AddObjectTypesToQuery(ECC_WorldDynamic);
-	CollisionParams.AddObjectTypesToQuery(ECC_Pawn);
-	CollisionParams.AddObjectTypesToQuery(ECC_WorldStatic);
-
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(this);
-
-
-	bool bBlockingHit = GetWorld()->SweepSingleByObjectType(Hit, Start, End, FQuat::Identity, CollisionParams, Shape, Params);
-
-	if (bBlockingHit) {
-
-		End = Hit.ImpactPoint;
-	}
-
-	//DrawDebugLine(GetWorld(), CameraComp->GetComponentLocation(), CameraComp->GetComponentLocation() + (GetControlRotation().Vector() * 5000),FColor::Red,true,2.00f,3.00f);
-
-	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-
-	//the first way
-
-	//FRotator Rotation= UKismetMathLibrary::FindLookAtRotation(HandLocation, End);
-
-	//the second way
-	FRotator Rotation = UKismetMathLibrary::MakeRotFromX(End - HandLocation);
-
-	FTransform SpawnTM = FTransform(Rotation, HandLocation);
-
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-	SpawnParams.Instigator = this;
-	GetWorld()->SpawnActor<AActor>(ProjectileClass2, SpawnTM, SpawnParams);
-}
-
-
 
 
 void AMCharacter::PrimaryInteract() {
