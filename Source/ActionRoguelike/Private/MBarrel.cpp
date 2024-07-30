@@ -60,7 +60,6 @@ void AMBarrel::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPri
 // Called every frame
 void AMBarrel::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
-
+	PrimaryActorTick.bCanEverTick = true;
 }
 

@@ -9,7 +9,7 @@ class UCameraComponent;
 class USpringArmComponent;
 class UMInteractionComponent;
 class UAnimMontage;
-
+class UMAttributeComponent;
 
 UCLASS()
 class ACTIONROGUELIKE_API AMCharacter : public ACharacter
@@ -22,13 +22,21 @@ protected:
 	TSubclassOf<AActor> ProjectileClass;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
-		TSubclassOf<AActor> ProjectileClass2;
+	TSubclassOf<AActor> ProjectileClass2;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	UAnimMontage* AttackAnim;
 
+	UPROPERTY(EditAnywhere, Category = "Ability")
+	TSubclassOf<AActor> PrimaryAbilityProjectile;
+
+	
+
 	FTimerHandle TimerHandle_PrimaryAttrack;
+
 	FTimerHandle TimerHandle_SecondaryAttrack;
+	
+	FTimerHandle TimerHandle_PrimaryAbility;
 
 public:
 	// Sets default values for this character's properties
@@ -39,11 +47,15 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArmComp;
+	
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* CameraComp;
 
 	UPROPERTY(VisibleAnywhere)
 	UMInteractionComponent* InteractionComp;
+
+	UPROPERTY(VisibleAnywhere ,BlueprintReadOnly)
+	UMAttributeComponent* AttributeComp;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -60,6 +72,9 @@ protected:
 
 	void SecondaryAttack_TimeElapsed();
 
+	void PrimaryAbility();
+
+	void PrimaryAbility_TimeElapsed();
 
 	void PrimaryInteract();
 public:	

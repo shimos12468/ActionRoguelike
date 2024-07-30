@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "MInteractionComponent.h"
 #include <Kismet/KismetMathLibrary.h>
+#include "MAttributeComponent.h"
 // Sets default values
 AMCharacter::AMCharacter()
 {
@@ -18,8 +19,11 @@ AMCharacter::AMCharacter()
 
 	InteractionComp = CreateDefaultSubobject<UMInteractionComponent>("InteractionComp");
 
+
 	CameraComp = CreateDefaultSubobject<UCameraComponent>("CameraComp");
 	CameraComp->SetupAttachment(SpringArmComp);
+	
+	AttributeComp = CreateDefaultSubobject<UMAttributeComponent>("AttributeComp");
 
 	GetCharacterMovement()-> bOrientRotationToMovement = true;
 
@@ -53,6 +57,9 @@ void AMCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAction("PrimaryAttack",IE_Pressed, this,&AMCharacter::PrimaryAttack);
 	PlayerInputComponent->BindAction("SecondaryAttack", IE_Pressed, this, &AMCharacter::SecondaryAttack);
+
+	PlayerInputComponent->BindAction("PrimaryAbility", IE_Pressed, this, &AMCharacter::PrimaryAbility);
+
 	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &AMCharacter::PrimaryInteract);
 }
 
@@ -97,6 +104,62 @@ void AMCharacter::SecondaryAttack() {
 }
 
 
+void AMCharacter::PrimaryAbility() {
+
+	PlayAnimMontage(AttackAnim);
+
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAbility, this, &AMCharacter::PrimaryAbility_TimeElapsed, 0.2f);
+
+}
+
+void AMCharacter::PrimaryAbility_TimeElapsed()
+{
+	FVector Start = CameraComp->GetComponentLocation();
+	FVector End = CameraComp->GetComponentLocation() + (GetControlRotation().Vector() * 5000);
+
+	FCollisionShape Shape;
+	Shape.SetSphere(20);
+
+	FHitResult Hit;
+
+	FCollisionObjectQueryParams CollisionParams;
+
+	CollisionParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	CollisionParams.AddObjectTypesToQuery(ECC_Pawn);
+	CollisionParams.AddObjectTypesToQuery(ECC_WorldStatic);
+
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+
+
+	bool bBlockingHit = GetWorld()->SweepSingleByObjectType(Hit, Start, End, FQuat::Identity, CollisionParams, Shape, Params);
+
+	if (bBlockingHit) {
+
+		End = Hit.ImpactPoint;
+	}
+
+
+
+	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+
+	//the first way
+
+	//FRotator Rotation= UKismetMathLibrary::FindLookAtRotation(HandLocation, End);
+
+	//the second way
+	FRotator Rotation = UKismetMathLibrary::MakeRotFromX(End - HandLocation);
+
+	FTransform SpawnTM = FTransform(Rotation, HandLocation);
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	SpawnParams.Instigator = this;
+	GetWorld()->SpawnActor<AActor>(PrimaryAbilityProjectile, SpawnTM, SpawnParams);
+
+}
+
 void AMCharacter::PrimaryAttack_TimeElapsed() {
 
 	
@@ -126,8 +189,8 @@ void AMCharacter::PrimaryAttack_TimeElapsed() {
 		End = Hit.ImpactPoint;
 	}
 
-	//DrawDebugLine(GetWorld(), CameraComp->GetComponentLocation(), CameraComp->GetComponentLocation() + (GetControlRotation().Vector() * 5000),FColor::Red,true,2.00f,3.00f);
 
+	
 	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 
 	//the first way

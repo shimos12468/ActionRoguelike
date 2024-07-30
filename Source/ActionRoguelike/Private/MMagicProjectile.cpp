@@ -6,7 +6,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include"Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
-
+#include "MAttributeComponent.h"
 // Sets default values
 AMMagicProjectile::AMMagicProjectile()
 {
@@ -14,17 +14,6 @@ AMMagicProjectile::AMMagicProjectile()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComp");
-	SphereComp->SetCollisionProfileName("Projectile");
-	RootComponent = SphereComp;
-
-	EffectComp = CreateDefaultSubobject<UParticleSystemComponent>("EffectComp");
-	EffectComp->SetupAttachment(SphereComp);
-
-	MovementComp = CreateDefaultSubobject<UProjectileMovementComponent>("MovementComp");
-	MovementComp->InitialSpeed = 1000.0f;
-	MovementComp->bRotationFollowsVelocity = true;
-	MovementComp->bInitialVelocityInLocalSpace = true;
 
 }
 
@@ -33,7 +22,7 @@ void AMMagicProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	SphereComp->IgnoreActorWhenMoving(GetInstigator(), true);
-	UE_LOG(LogTemp, Warning, TEXT("OtherActor: %s"), *GetNameSafe(GetInstigator()));
+	//UE_LOG(LogTemp, Warning, TEXT("OtherActor: %s"), *GetNameSafe(GetInstigator()));
 }
 
 void AMMagicProjectile::PostInitializeComponents() {
@@ -41,6 +30,7 @@ void AMMagicProjectile::PostInitializeComponents() {
 	Super::PostInitializeComponents();
 
 	SphereComp->OnComponentHit.AddDynamic(this, &AMMagicProjectile::OnHit);
+	SphereComp->OnComponentBeginOverlap.AddDynamic(this,&AMMagicProjectile::OnActorOverlap);
 
 }
 
@@ -48,11 +38,30 @@ void AMMagicProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherAc
 
 	if (OtherActor != GetInstigator()) {
 
-		UE_LOG(LogTemp, Warning, TEXT("Differant Actor"));
+		//UE_LOG(LogTemp, Warning, TEXT("Differant Actor"));
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), EmittingEffect, GetActorLocation(),GetActorRotation());
 		Destroy(true);
 	}
 }
+
+void AMMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+
+	if (OtherActor) {
+
+		 UMAttributeComponent* AttributeComp= Cast<UMAttributeComponent>(OtherActor->GetComponentByClass(UMAttributeComponent::StaticClass()));
+		
+		 if (AttributeComp) {
+
+			 AttributeComp->ApplyHealthChange(-20);
+			 Destroy(true);
+		 }
+	
+	}
+
+
+}
+
 
 // Called every frame
 void AMMagicProjectile::Tick(float DeltaTime)
