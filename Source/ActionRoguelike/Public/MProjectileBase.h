@@ -6,21 +6,39 @@
 #include "GameFramework/Actor.h"
 #include "MProjectileBase.generated.h"
 
-UCLASS()
+class USphereComponent;
+class UProjectileMovementComponent;
+class UParticleSystemComponent;
+
+UCLASS(ABSTRACT)
 class ACTIONROGUELIKE_API AMProjectileBase : public AActor
 {
 	GENERATED_BODY()
+protected:
+
+
+	UPROPERTY(EditDefaultsOnly,Category="Effects")
+	UParticleSystem* ImpactVFX; 
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere ,Category="Components")
+	USphereComponent* SphereComp;
+
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Components")
+	UProjectileMovementComponent* MovementComp;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Components")
+		UParticleSystemComponent* EffectComp;
+
+	UFUNCTION()
+	virtual void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
+	void Explode();
 	
-public:	
+	virtual void PostInitializeComponents() override;
+
+public:
 	// Sets default values for this actor's properties
 	AMProjectileBase();
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 };

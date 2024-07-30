@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MBaseProjectile.h"
+#include "MProjectileBase.h"
 #include "MDashProjectile.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ACTIONROGUELIKE_API AMDashProjectile : public AMBaseProjectile
+class ACTIONROGUELIKE_API AMDashProjectile : public AMProjectileBase
 {
 	GENERATED_BODY()
 	
@@ -18,22 +18,16 @@ class ACTIONROGUELIKE_API AMDashProjectile : public AMBaseProjectile
 public:
 	AMDashProjectile();
 	
-	UFUNCTION()
-		void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 protected:
 
 	FTimerHandle EmittEffect_TimeHandler;
-	FTimerHandle TeleportInstigator_TimeHandler;
-	UPROPERTY(EditAnywhere)
-	UParticleSystem* EmittingEffect;
+	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	virtual void PostInitializeComponents()override;
 
-	void EmitteEffect_TimeElapsed();
 	void TeleportInstigator_TimeElapsed();
 
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	virtual void Explode_Implementation()override;
+
+
 };

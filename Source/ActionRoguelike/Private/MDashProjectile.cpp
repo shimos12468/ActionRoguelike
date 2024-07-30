@@ -10,69 +10,39 @@
 
 AMDashProjectile::AMDashProjectile()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
-	SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComp");
-	SphereComp->SetCollisionProfileName("Projectile");
-	RootComponent = SphereComp;
-
-	EffectComp = CreateDefaultSubobject<UParticleSystemComponent>("EffectComp");
-	EffectComp->SetupAttachment(SphereComp);
-
-	MovementComp = CreateDefaultSubobject<UProjectileMovementComponent>("MovementComp");
-	MovementComp->InitialSpeed = 1000.0f;
-	MovementComp->bRotationFollowsVelocity = true;
-	MovementComp->bInitialVelocityInLocalSpace = true;
+	MovementComp->InitialSpeed = 6000;
 }
 
 void AMDashProjectile::BeginPlay()
 {
 	Super::BeginPlay();
+	GetWorldTimerManager().SetTimer(EmittEffect_TimeHandler, this, &AMDashProjectile::Explode, 0.2);
 	SphereComp->IgnoreActorWhenMoving(GetInstigator(), true);
-	SphereComp->OnComponentHit.AddDynamic(this, &AMDashProjectile::OnHit);
-	GetWorldTimerManager().SetTimer(EmittEffect_TimeHandler, this, &AMDashProjectile::EmitteEffect_TimeElapsed, 0.2);
-}
 
-void AMDashProjectile::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
-	
-}
-	
-
-void AMDashProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) {
-
-	if (OtherActor != GetInstigator()) {
-		GetWorldTimerManager().ClearTimer(EmittEffect_TimeHandler);
-		MovementComp->Velocity = FVector(0, 0, 0);
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), EmittingEffect, GetActorLocation(), GetActorRotation());
-		if (EffectComp) {
-			EffectComp->DestroyComponent();
-		}
-		GetWorldTimerManager().SetTimer(TeleportInstigator_TimeHandler, this, &AMDashProjectile::TeleportInstigator_TimeElapsed, 0.2);
-	}
-}
-
-
-void AMDashProjectile::EmitteEffect_TimeElapsed()
-{
-	GetWorldTimerManager().ClearTimer(EmittEffect_TimeHandler);
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), EmittingEffect, GetActorLocation(), GetActorRotation());
-	MovementComp->Velocity = FVector(0,0,0);
-	if (EffectComp) {
-		EffectComp->DestroyComponent();
-	}
-	GetWorldTimerManager().SetTimer(TeleportInstigator_TimeHandler, this, &AMDashProjectile::TeleportInstigator_TimeElapsed, 0.2);
 }
 
 void AMDashProjectile::TeleportInstigator_TimeElapsed()
 {
-	GetWorldTimerManager().ClearTimer(TeleportInstigator_TimeHandler);
 	GetInstigator()->TeleportTo(GetActorLocation(),GetInstigator()->GetActorRotation(),false,false);
 
 }
 
-void AMDashProjectile::Tick(float DeltaTime)
+void AMDashProjectile::Explode_Implementation()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	GetWorldTimerManager().ClearTimer(EmittEffect_TimeHandler);
+
+	UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVFX, GetActorLocation(), GetActorRotation());
+
+	MovementComp->StopMovementImmediately();
+
+	SetActorEnableCollision(false);
+	
+	if (EffectComp) {
+		EffectComp->DeactivateSystem();
+	}
+	
+	FTimerHandle TeleportInstigator_TimeHandler;
+	GetWorldTimerManager().SetTimer(TeleportInstigator_TimeHandler, this, &AMDashProjectile::TeleportInstigator_TimeElapsed, 0.2);
 }

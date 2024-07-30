@@ -14,27 +14,27 @@ UCLASS()
 class ACTIONROGUELIKE_API AMBaseProjectile : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	AMBaseProjectile();
 
 protected:
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	USphereComponent* SphereComp;
+		USphereComponent* SphereComp;
 
 	UPROPERTY(VisibleAnywhere)
-	UProjectileMovementComponent* MovementComp;
+		UProjectileMovementComponent* MovementComp;
 
 	UPROPERTY(VisibleAnywhere)
-	UParticleSystemComponent* EffectComp;
+		UParticleSystemComponent* EffectComp;
 
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

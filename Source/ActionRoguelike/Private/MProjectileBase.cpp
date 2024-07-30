@@ -2,26 +2,50 @@
 
 
 #include "MProjectileBase.h"
+#include <Components/SphereComponent.h>
+#include <Particles/ParticleSystemComponent.h>
+#include <GameFramework/ProjectileMovementComponent.h>
+#include <Kismet/GameplayStatics.h>
 
 // Sets default values
 AMProjectileBase::AMProjectileBase()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComp");
+	SphereComp->SetCollisionProfileName("Projectile");
+	SphereComp->OnComponentHit.AddDynamic(this,&AMProjectileBase::OnActorHit);
+	RootComponent = SphereComp;
+	EffectComp = CreateDefaultSubobject<UParticleSystemComponent>("EffectComp");
+	EffectComp->SetupAttachment(SphereComp);
+
+
+	MovementComp = CreateDefaultSubobject<UProjectileMovementComponent>("MovementComp");
+	MovementComp->bRotationFollowsVelocity = true;
+	MovementComp->bInitialVelocityInLocalSpace = true;
+	MovementComp->ProjectileGravityScale = 0;
+	MovementComp->InitialSpeed = 8000;
 
 }
 
-// Called when the game starts or when spawned
-void AMProjectileBase::BeginPlay()
+void AMProjectileBase::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	Super::BeginPlay();
-	
+	Explode();
 }
 
-// Called every frame
-void AMProjectileBase::Tick(float DeltaTime)
+void AMProjectileBase::PostInitializeComponents()
 {
-	Super::Tick(DeltaTime);
+	Super::PostInitializeComponents();
+}
+
+void AMProjectileBase::Explode_Implementation() {
+
+
+	if (ensure(!IsPendingKill())) {
+
+		UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVFX, GetActorLocation(), GetActorRotation());
+		Destroy();
+
+	}
 
 }
+
 
