@@ -1,5 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "MBarrel.h"
+#include "MAttributeComponent.h"
 // Sets default values
 AMBarrel::AMBarrel()
 {
@@ -35,7 +36,7 @@ void AMBarrel::PostInitializeComponents() {
 	
 	Super::PostInitializeComponents();
 
-	MeshComp->OnComponentHit.AddDynamic(this, &AMBarrel::OnHit);
+	MeshComp->OnComponentBeginOverlap.AddDynamic(this, &AMBarrel::OnHit);
 
 }
 
@@ -49,11 +50,24 @@ void AMBarrel::BeginPlay()
 void AMBarrel::Explode() {
 	UE_LOG(LogTemp, Warning, TEXT("DID HIT"));
 	RadialForceComp->FireImpulse();
+
+
+
 }
 
-void AMBarrel::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) {
+void AMBarrel::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
 
 	Explode();
+
+	if (OtherActor) {
+		
+		 UMAttributeComponent* AttributeComp= Cast<UMAttributeComponent>(OtherActor->GetComponentByClass(UMAttributeComponent::StaticClass()));
+		 if (AttributeComp)
+		 {
+			 AttributeComp->ApplyHealthChange(-50);
+		 }
+	}
+
 }
 
 
