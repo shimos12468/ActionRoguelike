@@ -30,6 +30,7 @@ AMCharacter::AMCharacter()
 	bUseControllerRotationYaw = false;
 }
 
+
 // Called when the game starts or when spawned
 void AMCharacter::BeginPlay()
 {
@@ -268,6 +269,23 @@ void AMCharacter::PrimaryInteract() {
 	if (InteractionComp) {
 
 		InteractionComp->PrimaryInteract();
+	}
+
+}
+
+void AMCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	
+	AttributeComp->OnHealthChanged.AddDynamic(this, &AMCharacter::OnHealthChanged);
+}
+
+void AMCharacter::OnHealthChanged(AActor* InstigatorActor, UMAttributeComponent* OwningComp, float NewHealth, float Delta)
+{
+
+	if (Delta < 0.0f&&NewHealth<=0.0f) {
+		APlayerController* pc = Cast<APlayerController>(GetController());
+		DisableInput(pc);
 	}
 
 }

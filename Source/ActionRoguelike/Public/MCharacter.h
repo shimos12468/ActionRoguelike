@@ -77,6 +77,10 @@ protected:
 	void PrimaryAbility_TimeElapsed();
 
 	void PrimaryInteract();
+
+
+	virtual void PostInitializeComponents()override;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -84,6 +88,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-
+	UFUNCTION()
+	void OnHealthChanged(AActor* InstigatorActor, UMAttributeComponent* OwningComp, float NewHealth, float Delta);
 
 };

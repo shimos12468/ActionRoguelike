@@ -17,6 +17,9 @@ class ACTIONROGUELIKE_API AMMagicProjectile : public AMProjectileBase
 	GENERATED_BODY()
 	
 public:	
+
+
+
 	// Sets default values for this actor's properties
 	AMMagicProjectile();
 	

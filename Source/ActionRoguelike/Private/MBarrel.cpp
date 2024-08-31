@@ -10,9 +10,6 @@ AMBarrel::AMBarrel()
 	MeshComp->SetSimulatePhysics(true);
 	RootComponent = MeshComp;
 
-
-	
-	
 	RadialForceComp=CreateDefaultSubobject<URadialForceComponent>("Radial Force 1");
 	RadialForceComp->SetupAttachment(MeshComp);
 

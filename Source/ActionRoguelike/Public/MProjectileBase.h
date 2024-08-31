@@ -5,11 +5,10 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "MProjectileBase.generated.h"
-
 class USphereComponent;
 class UProjectileMovementComponent;
 class UParticleSystemComponent;
-
+class USoundCue;
 UCLASS(ABSTRACT)
 class ACTIONROGUELIKE_API AMProjectileBase : public AActor
 {
@@ -19,9 +18,16 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly,Category="Effects")
 	UParticleSystem* ImpactVFX; 
+	
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundCue* ImpactSound;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere ,Category="Components")
 	USphereComponent* SphereComp;
+
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Components")
+	UAudioComponent* FlightSoundComponent;
 
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Components")

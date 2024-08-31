@@ -6,16 +6,21 @@
 #include <Particles/ParticleSystemComponent.h>
 #include <GameFramework/ProjectileMovementComponent.h>
 #include <Kismet/GameplayStatics.h>
-
+#include <Components/AudioComponent.h>
 // Sets default values
 AMProjectileBase::AMProjectileBase()
 {
 	SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComp");
 	SphereComp->SetCollisionProfileName("Projectile");
-	SphereComp->OnComponentHit.AddDynamic(this,&AMProjectileBase::OnActorHit);
+	
+
+
 	RootComponent = SphereComp;
 	EffectComp = CreateDefaultSubobject<UParticleSystemComponent>("EffectComp");
 	EffectComp->SetupAttachment(SphereComp);
+
+	FlightSoundComponent = CreateDefaultSubobject<UAudioComponent>("FlightSound");
+	FlightSoundComponent->SetupAttachment(SphereComp);
 
 
 	MovementComp = CreateDefaultSubobject<UProjectileMovementComponent>("MovementComp");
@@ -34,6 +39,8 @@ void AMProjectileBase::OnActorHit(UPrimitiveComponent* HitComponent, AActor* Oth
 void AMProjectileBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+	SphereComp->OnComponentHit.AddDynamic(this, &AMProjectileBase::OnActorHit);
+	
 }
 
 void AMProjectileBase::Explode_Implementation() {

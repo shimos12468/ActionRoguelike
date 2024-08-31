@@ -7,6 +7,9 @@
 #include"Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "MAttributeComponent.h"
+#include "Sound\SoundCue.h"
+#include <Components/AudioComponent.h>
+#include "MProjectileBase.h"
 // Sets default values
 AMMagicProjectile::AMMagicProjectile()
 {
@@ -19,6 +22,7 @@ void AMMagicProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* Ot
 	if (OtherActor != GetInstigator()) {
 
 		//UE_LOG(LogTemp, Warning, TEXT("Differant Actor"));
+		UGameplayStatics::PlaySoundAtLocation(this,ImpactSound,Hit.ImpactPoint);
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, GetActorLocation(), GetActorRotation());
 		Destroy(true);
 	}
@@ -29,6 +33,7 @@ void AMMagicProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	SphereComp->IgnoreActorWhenMoving(GetInstigator(), true);
+	//FlightSoundComponent->Play();
 }
 
 void AMMagicProjectile::PostInitializeComponents() {

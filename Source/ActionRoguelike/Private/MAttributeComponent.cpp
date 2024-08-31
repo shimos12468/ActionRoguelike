@@ -11,6 +11,11 @@ UMAttributeComponent::UMAttributeComponent()
 	Health = 100;
 }
 
+bool UMAttributeComponent::IsAlive() const
+{
+	return Health > 0.0f;
+}
+
 bool UMAttributeComponent::ApplyHealthChange(float Delta)
 {
 	Health += Delta;
