@@ -210,8 +210,6 @@ void AMCharacter::PrimaryAttack_TimeElapsed() {
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
 }
 
-
-
 void AMCharacter::SecondaryAttack_TimeElapsed() {
 
 
@@ -282,6 +280,13 @@ void AMCharacter::PostInitializeComponents()
 
 void AMCharacter::OnHealthChanged(AActor* InstigatorActor, UMAttributeComponent* OwningComp, float NewHealth, float Delta)
 {
+
+
+	if (Delta < 0.0f&& NewHealth>=0.0f) {
+		
+		USkeletalMeshComponent* mesh = Cast<USkeletalMeshComponent>(GetComponentByClass(USkeletalMeshComponent::StaticClass()));
+		mesh->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
+	}
 
 	if (Delta < 0.0f&&NewHealth<=0.0f) {
 		APlayerController* pc = Cast<APlayerController>(GetController());
