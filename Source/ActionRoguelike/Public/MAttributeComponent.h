@@ -26,10 +26,16 @@ protected:
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category ="Atributes")
 	float Health;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Atributes")
+	float Damage;
+
 public:
 
 	UFUNCTION(BlueprintCallable)
 	bool IsAlive() const;
+
+	UFUNCTION(BlueprintCallable)
+	float GetDamage();
 
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;

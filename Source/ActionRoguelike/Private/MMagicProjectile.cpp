@@ -46,13 +46,19 @@ void AMMagicProjectile::PostInitializeComponents() {
 void AMMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 
-	if (OtherActor&&OtherActor	!=GetInstigator()) {
+	AActor* owner = GetInstigator();
+
+	if (OtherActor&&OtherActor	!= owner) {
 
 		 UMAttributeComponent* AttributeComp= Cast<UMAttributeComponent>(OtherActor->GetComponentByClass(UMAttributeComponent::StaticClass()));
 		
+		 owner = GetInstigator();
+
+		 UMAttributeComponent* ActorAttributies = Cast<UMAttributeComponent>(owner->GetComponentByClass(UMAttributeComponent::StaticClass()));
+
 		 if (AttributeComp) {
 
-			 AttributeComp->ApplyHealthChange(-20);
+			 AttributeComp->ApplyHealthChange(-1*ActorAttributies->GetDamage());
 			 Destroy(true);
 		 }
 	

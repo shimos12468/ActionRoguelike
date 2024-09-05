@@ -10,6 +10,7 @@ UMAttributeComponent::UMAttributeComponent()
 	// off to improve performance if you don't need them.
 	MaxHealth = 100;
 	Health = MaxHealth;
+	Damage = 20;
 }
 
 bool UMAttributeComponent::IsAlive() const
@@ -17,10 +18,17 @@ bool UMAttributeComponent::IsAlive() const
 	return Health > 0.0f;
 }
 
+float UMAttributeComponent::GetDamage()
+{
+	return Damage;
+}
+
+
+
 bool UMAttributeComponent::ApplyHealthChange(float Delta)
 {
 	Health += Delta;
-
+	Health= FMath::Clamp(Health,0.0f,MaxHealth);
 	OnHealthChanged.Broadcast(nullptr, this, Health, Delta);
 
 	return true;
