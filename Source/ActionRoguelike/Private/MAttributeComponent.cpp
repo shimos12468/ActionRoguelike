@@ -23,7 +23,20 @@ float UMAttributeComponent::GetDamage()
 	return Damage;
 }
 
+float UMAttributeComponent::GetHealth()
+{
+	return Health;
+}
 
+float UMAttributeComponent::GetMaxHealth()
+{
+	return MaxHealth;
+}
+
+bool UMAttributeComponent::IsPlayerFullHealth()
+{
+	return Health == MaxHealth;
+}
 
 bool UMAttributeComponent::ApplyHealthChange(float Delta)
 {

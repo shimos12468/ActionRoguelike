@@ -53,13 +53,23 @@ void AMMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent,
 		 UMAttributeComponent* AttributeComp= Cast<UMAttributeComponent>(OtherActor->GetComponentByClass(UMAttributeComponent::StaticClass()));
 		
 		 owner = GetInstigator();
+		 
+		 if (owner) {
 
-		 UMAttributeComponent* ActorAttributies = Cast<UMAttributeComponent>(owner->GetComponentByClass(UMAttributeComponent::StaticClass()));
+			UMAttributeComponent* ActorAttributies = Cast<UMAttributeComponent>(owner->FindComponentByClass(UMAttributeComponent::StaticClass()));
 
-		 if (AttributeComp) {
+			if (AttributeComp) {
 
-			 AttributeComp->ApplyHealthChange(-1*ActorAttributies->GetDamage());
-			 Destroy(true);
+				AttributeComp->ApplyHealthChange(-1 * ActorAttributies->GetDamage());
+				Destroy(true);
+			}
+		 }
+		 else {
+			 if (AttributeComp) {
+
+				 AttributeComp->ApplyHealthChange(-1 * 20);
+				 Destroy(true);
+			 }
 		 }
 	
 	}

@@ -37,6 +37,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetDamage();
 
+	UFUNCTION(BlueprintCallable)
+	float GetHealth();
+
+
+	UFUNCTION(BlueprintCallable)
+	float GetMaxHealth();
+
+	UFUNCTION(BlueprintCallable)
+	bool IsPlayerFullHealth();
+
+
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
 
