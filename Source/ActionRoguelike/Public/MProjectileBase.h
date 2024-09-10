@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Camera/CameraShakeBase.h"
 #include "GameFramework/Actor.h"
 #include "MProjectileBase.generated.h"
 class USphereComponent;
@@ -20,6 +21,9 @@ protected:
 	UParticleSystem* ImpactVFX; 
 	
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	UParticleSystem* SpawnVFX;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Sound")
 	USoundCue* ImpactSound;
 
@@ -35,6 +39,10 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Components")
 		UParticleSystemComponent* EffectComp;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Components")
+	TSubclassOf<UCameraShakeBase> CameraShakeAsset;
+
 
 	UFUNCTION()
 	virtual void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);

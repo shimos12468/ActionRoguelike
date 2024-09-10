@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "MInteractionComponent.h"
 #include <Kismet/KismetMathLibrary.h>
+#include "Kismet/GameplayStatics.h"
 #include "MAttributeComponent.h"
 // Sets default values
 AMCharacter::AMCharacter()
@@ -193,7 +194,7 @@ void AMCharacter::PrimaryAttack_TimeElapsed() {
 
 	
 	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SpawnVFX, HandLocation, GetActorRotation());
 	//the first way
 	
 	//FRotator Rotation= UKismetMathLibrary::FindLookAtRotation(HandLocation, End);

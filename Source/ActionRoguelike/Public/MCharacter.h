@@ -30,7 +30,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Ability")
 	TSubclassOf<AActor> PrimaryAbilityProjectile;
 
-	
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	UParticleSystem* SpawnVFX;
 
 	FTimerHandle TimerHandle_PrimaryAttrack;
 
