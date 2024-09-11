@@ -6,7 +6,6 @@
 #include "GameFramework/Character.h"
 #include "MAICharacter.generated.h"
 
-class UPawnSensingComponent;
 UCLASS()
 class ACTIONROGUELIKE_API AMAICharacter : public ACharacter
 {
@@ -16,11 +15,15 @@ public:
 	// Sets default values for this character's properties
 	AMAICharacter();
 
-	UPROPERTY(EditAnywhere , Category = "Components")
-	UPawnSensingComponent* PawnSensingComponent;
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 
-	UFUNCTION()
-	void OnPawnSeen(APawn* Pawn);
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
 
-	virtual void PostInitializeComponents() override;
+	// Called to bind functionality to input
+	
+
 };

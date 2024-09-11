@@ -87,7 +87,7 @@ void AMMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent,
 		 else {
 			 if (AttributeComp) {
 
-				 AttributeComp->ApplyHealthChange(-1 * 20);
+				 AttributeComp->ApplyHealthChange(-1 * DamageAmount);
 				 Destroy(true);
 			 }
 		 }

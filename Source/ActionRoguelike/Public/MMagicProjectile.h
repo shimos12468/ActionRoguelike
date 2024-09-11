@@ -18,7 +18,8 @@ class ACTIONROGUELIKE_API AMMagicProjectile : public AMProjectileBase
 	
 public:	
 
-
+	UPROPERTY(EditAnywhere,Category = "Attributes")
+	float DamageAmount = 20;
 
 	// Sets default values for this actor's properties
 	AMMagicProjectile();
