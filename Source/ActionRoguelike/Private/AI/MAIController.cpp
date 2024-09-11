@@ -15,7 +15,4 @@ void AMAIController::BeginPlay()
 
 		RunBehaviorTree(BehaviorTree);
 	}
-
-	 
-
 }
