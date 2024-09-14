@@ -70,7 +70,7 @@ void AMMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent,
 		 UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, GetActorLocation(), GetActorRotation());
 		 UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, SweepResult.ImpactPoint);
 
-
+		 UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraShakeAsset, SweepResult.ImpactPoint, 500, 2000);
 		 owner = GetInstigator();
 		 
 		 if (owner) {
