@@ -1,0 +1,47 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/GameModeBase.h"
+#include "AIModule/Classes/EnvironmentQuery/EnvQueryTypes.h"
+#include "MGameModeBase.generated.h"
+
+/**
+ * 
+ */
+class UEnvQuery;
+class UEnvQueryInstanceBlueprintWrapper;
+class UCurveFloat;
+UCLASS()
+class ACTIONROGUELIKE_API AMGameModeBase : public AGameModeBase
+{
+	GENERATED_BODY()
+	
+protected:
+
+	
+	UPROPERTY(EditDefaultsOnly,Category="AI")
+	UEnvQuery* SpawnBotQuery;
+	
+	UPROPERTY(EditDefaultsOnly,Category = "AI")
+	TSubclassOf<AActor> MinionClass;
+
+	UPROPERTY(EditDefaultsOnly ,Category = "AI")
+	UCurveFloat* DifficultyCurve;
+
+	UPROPERTY(EditDefaultsOnly,Category = "AI")
+	float SpawnTimerInterval;
+
+	FTimerHandle TimerHandle_SpawnBots;
+	
+	UFUNCTION()
+	void SpawnBotTimerElapsed();
+	UFUNCTION()
+	void OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+public:
+
+	AMGameModeBase();
+	virtual void StartPlay() override;
+	
+};

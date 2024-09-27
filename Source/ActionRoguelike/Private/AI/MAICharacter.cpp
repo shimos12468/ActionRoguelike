@@ -6,12 +6,14 @@
 #include "AIController.h"
 #include <AIModule/Classes/BehaviorTree/BlackboardComponent.h>
 #include <DrawDebugHelpers.h>
+#include "MAttributeComponent.h"
 
 // Sets default values
 AMAICharacter::AMAICharacter()
 {
     PawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensingComp");
-
+    AttributeComp = CreateDefaultSubobject<UMAttributeComponent>("AttributeComp");
+    AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 void AMAICharacter::PostInitializeComponents()

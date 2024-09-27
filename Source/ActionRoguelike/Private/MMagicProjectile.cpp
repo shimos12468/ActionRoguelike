@@ -19,13 +19,34 @@ AMMagicProjectile::AMMagicProjectile()
 
 void AMMagicProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (OtherActor != GetInstigator()) {
+	AActor* owner = GetInstigator();
 
-		//UE_LOG(LogTemp, Warning, TEXT("Differant Actor"));
+	if (OtherActor&&OtherActor != owner) {
+
+		UE_LOG(LogTemp, Warning, TEXT("Differant Actor"));
+		UMAttributeComponent* AttributeComp = Cast<UMAttributeComponent>(OtherActor->GetComponentByClass(UMAttributeComponent::StaticClass()));
 		UGameplayStatics::PlaySoundAtLocation(this,ImpactSound,Hit.ImpactPoint);
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, GetActorLocation(), GetActorRotation());
 		UGameplayStatics::PlayWorldCameraShake(GetWorld() , CameraShakeAsset,Hit.ImpactPoint,500,2000);
-		
+		owner = GetInstigator();
+		if (owner) {
+
+			UMAttributeComponent* ActorAttributies = Cast<UMAttributeComponent>(owner->FindComponentByClass(UMAttributeComponent::StaticClass()));
+
+			if (AttributeComp) {
+
+				AttributeComp->ApplyHealthChange(-1 * ActorAttributies->GetDamage());
+				Destroy(true);
+			}
+
+		}
+		else {
+			if (AttributeComp) {
+
+				AttributeComp->ApplyHealthChange(-1 * DamageAmount);
+				Destroy(true);
+			}
+		}
 		Destroy(true);
 	}
 }

@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "MAICharacter.generated.h"
 
+class UMAttributeComponent;
 class UPawnSensingComponent;
 UCLASS()
 class ACTIONROGUELIKE_API AMAICharacter : public ACharacter
@@ -18,6 +19,8 @@ public:
 
 	UPROPERTY(EditAnywhere , Category = "Components")
 	UPawnSensingComponent* PawnSensingComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UMAttributeComponent* AttributeComp;
 
 	UFUNCTION()
 	void OnPawnSeen(APawn* Pawn);
