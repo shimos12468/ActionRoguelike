@@ -5,6 +5,12 @@
 #include <AIModule/Classes/AIController.h>
 #include <GameFramework/Character.h>
 #include "BehaviorTree/BlackBoardComponent.h"
+#include "MAttributeComponent.h"
+
+UMBTTask_RangedAttack::UMBTTask_RangedAttack()
+{
+	MaxBulletSpread = 2.0f;
+}
 
 EBTNodeResult::Type UMBTTask_RangedAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
@@ -27,8 +33,17 @@ EBTNodeResult::Type UMBTTask_RangedAttack::ExecuteTask(UBehaviorTreeComponent& O
 			return EBTNodeResult::Failed;
 		}
 
+		if (!UMAttributeComponent::IsActorAlive(TargetActor)) {
+			return EBTNodeResult::Failed;
+		
+		}
+
+
 		FVector Direction = TargetActor->GetActorLocation() - MuzzleLocation;
+		
 		FRotator MuzzleRotation = Direction.Rotation();
+		MuzzleRotation.Pitch += FMath::RandRange(0.f,MaxBulletSpread);
+		MuzzleRotation.Yaw += FMath::RandRange(-MaxBulletSpread, MaxBulletSpread);
 
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Instigator = MyPawn;

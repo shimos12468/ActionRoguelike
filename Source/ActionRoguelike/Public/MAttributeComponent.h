@@ -17,6 +17,12 @@ class ACTIONROGUELIKE_API UMAttributeComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UMAttributeComponent();
+	UFUNCTION(BlueprintCallable,Category = "Attributes")
+	static UMAttributeComponent* GetAttributies(AActor* FromActor);
+
+	UFUNCTION(BlueprintCallable, Category = "Attributes")
+	static bool IsActorAlive(AActor* Actor);
+
 
 protected:
 
@@ -26,16 +32,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category ="Atributes")
 	float Health;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Atributes")
-	float Damage;
+
 
 public:
 
 	UFUNCTION(BlueprintCallable)
 	bool IsAlive() const;
-
-	UFUNCTION(BlueprintCallable)
-	float GetDamage();
 
 	UFUNCTION(BlueprintCallable)
 	float GetHealth();
@@ -52,5 +54,5 @@ public:
 	FOnHealthChanged OnHealthChanged;
 
 	UFUNCTION(BlueprintCallable ,Category = "Attributes")
-	bool ApplyHealthChange(float Delta);
+	bool ApplyHealthChange(AActor* InstigatorActor , float Delta);
 };

@@ -14,7 +14,7 @@ void AMHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 			return;
 
 		GetWorldTimerManager().SetTimer(TimerHandle_DeactivateMesh, this, &AMHealthPotion::Activate, DeactivationDuration);
-		Attributes->ApplyHealthChange(HealthAmount);
+		Attributes->ApplyHealthChange(this , HealthAmount);
 		Deactivate();
 	}
 }

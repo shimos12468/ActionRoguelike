@@ -43,6 +43,12 @@ void AMProjectileBase::PostInitializeComponents()
 	
 }
 
+void AMProjectileBase::BeginPlay()
+{
+	Super::BeginPlay();
+	FlightSoundComponent->Play();
+}
+
 void AMProjectileBase::Explode_Implementation() {
 
 

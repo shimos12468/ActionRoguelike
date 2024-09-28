@@ -21,9 +21,14 @@ public:
 	UPawnSensingComponent* PawnSensingComponent;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UMAttributeComponent* AttributeComp;
+	
+	UFUNCTION()
+	void SetTargetActor(AActor* TargetActor);
 
 	UFUNCTION()
 	void OnPawnSeen(APawn* Pawn);
 
 	virtual void PostInitializeComponents() override;
+	UFUNCTION()
+		void OnHealthChanged(AActor* InstigatorActor, UMAttributeComponent* OwningComp, float NewHealth, float Delta);
 };

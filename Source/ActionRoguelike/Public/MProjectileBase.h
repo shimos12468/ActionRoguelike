@@ -51,7 +51,7 @@ protected:
 	void Explode();
 	
 	virtual void PostInitializeComponents() override;
-
+	virtual void BeginPlay()override;
 public:
 	// Sets default values for this actor's properties
 	AMProjectileBase();

@@ -26,7 +26,9 @@ void UMBTService_CheckHealth::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 
 					UE_LOG(LogTemp, Warning, TEXT("Changeing actor"));
 					float CurrentHealth = AttrebuteComp->GetHealth();
-					BlackBoardComp->SetValueAsBool(HealthKey.SelectedKeyName, true);
+					float Limit = BlackBoardComp->GetValueAsFloat(HealthLimit.SelectedKeyName);
+
+					BlackBoardComp->SetValueAsBool(HealthKey.SelectedKeyName, CurrentHealth<Limit);
 
 				}
 

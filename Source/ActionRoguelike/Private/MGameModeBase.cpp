@@ -8,6 +8,7 @@
 #include "AI/MAICharacter.h"
 #include "MAttributeComponent.h"
 #include "EngineUtils.h"
+#include "DrawDebugHelpers.h"
 AMGameModeBase::AMGameModeBase()
 {
 	SpawnTimerInterval = 2.0f;
@@ -22,6 +23,37 @@ void AMGameModeBase::StartPlay()
 
 void AMGameModeBase::SpawnBotTimerElapsed()
 {
+
+	int32 NumOfAliveBots = 0;
+	for (TActorIterator<AMAICharacter> It(GetWorld()); It; ++It) {
+
+		AMAICharacter* Bot = *It;
+
+		UMAttributeComponent* AttributeComp =UMAttributeComponent::GetAttributies(Bot);
+
+		if (ensure(AttributeComp) && AttributeComp->IsAlive()) {
+			NumOfAliveBots++;
+		}
+
+
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("Found %i alive bots !"), NumOfAliveBots);
+
+	float MaxAliveBots = 10.0f;
+
+	if (DifficultyCurve)
+	{
+		MaxAliveBots = DifficultyCurve->GetFloatValue(GetWorld()->TimeSeconds);
+	}
+
+	if (NumOfAliveBots >= MaxAliveBots) {
+
+		UE_LOG(LogTemp, Log, TEXT("At maximum Bot capaicty ,skipping Bot Spawn"));
+		return;
+	}
+
+
 	UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(this, SpawnBotQuery, this, EEnvQueryRunMode::RandomBest5Pct, nullptr);
 	if (ensure(QueryInstance)) {
 
@@ -37,42 +69,12 @@ void AMGameModeBase::OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryIn
 		return;
 	}
 
-
-	int32 NumOfAliveBots = 0;
-	for (TActorIterator<AMAICharacter> It(GetWorld()); It; ++It) {
-
-		AMAICharacter* Bot = *It;
-
-		UMAttributeComponent* AttributeComp = Cast<UMAttributeComponent>(Bot->GetComponentByClass(UMAttributeComponent::StaticClass()));
-
-		if (AttributeComp && AttributeComp->IsAlive()) {
-			NumOfAliveBots++;
-		}
-
-
-	}
-
-	float MaxAliveBots = 10.0f;
-
-	if (DifficultyCurve)
-	{
-		MaxAliveBots = DifficultyCurve->GetFloatValue(GetWorld()->TimeSeconds);
-	}
-
-	if (NumOfAliveBots >= MaxAliveBots) {
-		return;
-	}
-
-
 	TArray<FVector>Locations = QueryInstance->GetResultsAsLocations();
-
-
-
 
 	if (Locations.IsValidIndex(0)) {
 		
 		 GetWorld()->SpawnActor<AActor>(MinionClass, Locations[0], FRotator::ZeroRotator);
-
+		 DrawDebugSphere(GetWorld(), Locations[0], 50, 20, FColor::Blue, false, 60);
 	}
 
 }

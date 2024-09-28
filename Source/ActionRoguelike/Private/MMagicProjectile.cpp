@@ -16,102 +16,69 @@ AMMagicProjectile::AMMagicProjectile()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 }
+void AMMagicProjectile::PostInitializeComponents() {
 
-void AMMagicProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
-{
-	AActor* owner = GetInstigator();
+	Super::PostInitializeComponents();
+	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &AMMagicProjectile::OnActorOverlap);
 
-	if (OtherActor&&OtherActor != owner) {
-
-		UE_LOG(LogTemp, Warning, TEXT("Differant Actor"));
-		UMAttributeComponent* AttributeComp = Cast<UMAttributeComponent>(OtherActor->GetComponentByClass(UMAttributeComponent::StaticClass()));
-		UGameplayStatics::PlaySoundAtLocation(this,ImpactSound,Hit.ImpactPoint);
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, GetActorLocation(), GetActorRotation());
-		UGameplayStatics::PlayWorldCameraShake(GetWorld() , CameraShakeAsset,Hit.ImpactPoint,500,2000);
-		owner = GetInstigator();
-		if (owner) {
-
-			UMAttributeComponent* ActorAttributies = Cast<UMAttributeComponent>(owner->FindComponentByClass(UMAttributeComponent::StaticClass()));
-
-			if (AttributeComp) {
-
-				AttributeComp->ApplyHealthChange(-1 * ActorAttributies->GetDamage());
-				Destroy(true);
-			}
-
-		}
-		else {
-			if (AttributeComp) {
-
-				AttributeComp->ApplyHealthChange(-1 * DamageAmount);
-				Destroy(true);
-			}
-		}
-		Destroy(true);
-	}
 }
+
+
 
 // Called when the game starts or when spawned
 void AMMagicProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	SphereComp->IgnoreActorWhenMoving(GetInstigator(), true);
-
-	/*if (GetInstigator()) {
-		USkeletalMeshComponent* mesh = Cast<USkeletalMeshComponent>(GetInstigator()->FindComponentByClass(USkeletalMeshComponent::StaticClass()));
-		if (mesh) {
-
-			FVector HandLocation= mesh->GetSocketLocation("Muzzle_01");
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SpawnVFX, HandLocation, FRotator::ZeroRotator);
-		}
-
-
-	}*/
-
-	
-
-	//FlightSoundComponent->Play();
 }
 
-void AMMagicProjectile::PostInitializeComponents() {
 
-	Super::PostInitializeComponents();
-	SphereComp->OnComponentBeginOverlap.AddDynamic(this,&AMMagicProjectile::OnActorOverlap);
+void AMMagicProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	AActor* OwnerActor = GetInstigator();
 
+	if (OtherActor && OtherActor != OwnerActor) {
+
+		ApplyDamage(Hit, OwnerActor, OtherActor);
+	}
+}
+
+void AMMagicProjectile::ApplyDamage(const FHitResult& Hit, AActor* OwnerActor, AActor* OtherActor)
+{
+	UMAttributeComponent* AttributeComp = Cast<UMAttributeComponent>(OtherActor->GetComponentByClass(UMAttributeComponent::StaticClass()));
+	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, Hit.ImpactPoint);
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, GetActorLocation(), GetActorRotation());
+	UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraShakeAsset, Hit.ImpactPoint, 500, 2000);
+	OwnerActor = GetInstigator();
+	if (OwnerActor) {
+
+		UMAttributeComponent* ActorAttributies = Cast<UMAttributeComponent>(OwnerActor->FindComponentByClass(UMAttributeComponent::StaticClass()));
+
+		if (AttributeComp) {
+
+			AttributeComp->ApplyHealthChange(GetInstigator(), -1 * DamageAmount);
+			Destroy(true);
+		}
+
+	}
+	else {
+		if (AttributeComp) {
+
+			AttributeComp->ApplyHealthChange(GetInstigator(), -1 * DamageAmount);
+			Destroy(true);
+		}
+	}
+	Destroy(true);
 }
 
 void AMMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	
-	AActor* owner = GetInstigator();
+	AActor* OwnerActor = GetInstigator();
 
-	if (OtherActor&&OtherActor!= owner) {
+	if (OtherActor&&OtherActor!= OwnerActor) {
 
-		 UMAttributeComponent* AttributeComp= Cast<UMAttributeComponent>(OtherActor->GetComponentByClass(UMAttributeComponent::StaticClass()));
-		 UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, GetActorLocation(), GetActorRotation());
-		 UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, SweepResult.ImpactPoint);
-
-		 UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraShakeAsset, SweepResult.ImpactPoint, 500, 2000);
-		 owner = GetInstigator();
-		 
-		 if (owner) {
-
-			UMAttributeComponent* ActorAttributies = Cast<UMAttributeComponent>(owner->FindComponentByClass(UMAttributeComponent::StaticClass()));
-
-			if (AttributeComp) {
-
-				AttributeComp->ApplyHealthChange(-1 * ActorAttributies->GetDamage());
-				Destroy(true);
-			}
-
-		 }
-		 else {
-			 if (AttributeComp) {
-
-				 AttributeComp->ApplyHealthChange(-1 * DamageAmount);
-				 Destroy(true);
-			 }
-		 }
+		ApplyDamage(SweepResult, OwnerActor, OtherActor);
 	
 	}
 

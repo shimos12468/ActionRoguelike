@@ -10,7 +10,6 @@ UMAttributeComponent::UMAttributeComponent()
 	// off to improve performance if you don't need them.
 	MaxHealth = 100;
 	Health = MaxHealth;
-	Damage = 20;
 }
 
 bool UMAttributeComponent::IsAlive() const
@@ -18,10 +17,7 @@ bool UMAttributeComponent::IsAlive() const
 	return Health > 0.0f;
 }
 
-float UMAttributeComponent::GetDamage()
-{
-	return Damage;
-}
+
 
 float UMAttributeComponent::GetHealth()
 {
@@ -38,11 +34,32 @@ bool UMAttributeComponent::IsPlayerFullHealth()
 	return Health == MaxHealth;
 }
 
-bool UMAttributeComponent::ApplyHealthChange(float Delta)
+bool UMAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
 {
+	float OldHealth = Health;
 	Health += Delta;
 	Health= FMath::Clamp(Health,0.0f,MaxHealth);
-	OnHealthChanged.Broadcast(nullptr, this, Health, Delta);
+	float ActualDelta = Health - OldHealth;
+	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
 
-	return true;
+	return ActualDelta!=0;
+}
+
+UMAttributeComponent* UMAttributeComponent::GetAttributies(AActor* FromActor)
+{
+	if (FromActor) {
+
+		return Cast<UMAttributeComponent>(FromActor->GetComponentByClass(UMAttributeComponent::StaticClass()));
+	}
+	return nullptr;
+}
+
+bool UMAttributeComponent::IsActorAlive(AActor* Actor)
+{
+	UMAttributeComponent* Attributies = GetAttributies(Actor);
+
+	if (Attributies) {
+		return Attributies->IsAlive();
+	}
+	return false;
 }

@@ -30,23 +30,31 @@ AMCharacter::AMCharacter()
 
 	bUseControllerRotationYaw = false;
 }
-
-
-// Called when the game starts or when spawned
-void AMCharacter::BeginPlay()
+void AMCharacter::PostInitializeComponents()
 {
-	Super::BeginPlay();
-	
+	Super::PostInitializeComponents();
+
+	AttributeComp->OnHealthChanged.AddDynamic(this, &AMCharacter::OnHealthChanged);
 }
 
 
-
-// Called every frame
-void AMCharacter::Tick(float DeltaTime)
+void AMCharacter::OnHealthChanged(AActor* InstigatorActor, UMAttributeComponent* OwningComp, float NewHealth, float Delta)
 {
-	Super::Tick(DeltaTime);
+
+
+	if (Delta < 0.0f) {
+
+		USkeletalMeshComponent* mesh = Cast<USkeletalMeshComponent>(GetComponentByClass(USkeletalMeshComponent::StaticClass()));
+		mesh->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
+	}
+
+	if (Delta < 0.0f && NewHealth <= 0.0f) {
+		APlayerController* pc = Cast<APlayerController>(GetController());
+		DisableInput(pc);
+	}
 
 }
+
 
 // Called to bind functionality to input
 void AMCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -272,26 +280,5 @@ void AMCharacter::PrimaryInteract() {
 
 }
 
-void AMCharacter::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
-	
-	AttributeComp->OnHealthChanged.AddDynamic(this, &AMCharacter::OnHealthChanged);
-}
-
-void AMCharacter::OnHealthChanged(AActor* InstigatorActor, UMAttributeComponent* OwningComp, float NewHealth, float Delta)
-{
 
 
-	if (Delta < 0.0f&& NewHealth>=0.0f) {
-		
-		USkeletalMeshComponent* mesh = Cast<USkeletalMeshComponent>(GetComponentByClass(USkeletalMeshComponent::StaticClass()));
-		mesh->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
-	}
-
-	if (Delta < 0.0f&&NewHealth<=0.0f) {
-		APlayerController* pc = Cast<APlayerController>(GetController());
-		DisableInput(pc);
-	}
-
-}

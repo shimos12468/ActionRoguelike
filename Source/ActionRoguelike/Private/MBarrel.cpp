@@ -4,8 +4,7 @@
 // Sets default values
 AMBarrel::AMBarrel()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("Explosive mesh");
 	MeshComp->SetSimulatePhysics(true);
 	RootComponent = MeshComp;
@@ -37,13 +36,6 @@ void AMBarrel::PostInitializeComponents() {
 
 }
 
-// Called when the game starts or when spawned
-void AMBarrel::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
 void AMBarrel::Explode() {
 	UE_LOG(LogTemp, Warning, TEXT("DID HIT"));
 	RadialForceComp->FireImpulse();
@@ -61,16 +53,8 @@ void AMBarrel::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActo
 		 UMAttributeComponent* AttributeComp= Cast<UMAttributeComponent>(OtherActor->GetComponentByClass(UMAttributeComponent::StaticClass()));
 		 if (AttributeComp)
 		 {
-			 AttributeComp->ApplyHealthChange(-50);
+			 AttributeComp->ApplyHealthChange(this ,-50);
 		 }
 	}
 
 }
-
-
-// Called every frame
-void AMBarrel::Tick(float DeltaTime)
-{
-	PrimaryActorTick.bCanEverTick = true;
-}
-
