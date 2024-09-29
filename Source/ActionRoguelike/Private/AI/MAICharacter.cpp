@@ -8,6 +8,7 @@
 #include <DrawDebugHelpers.h>
 #include "MAttributeComponent.h"
 #include "BrainComponent.h"
+#include "MWorldUserWidget.h"
 // Sets default values
 AMAICharacter::AMAICharacter()
 {
@@ -26,13 +27,24 @@ void AMAICharacter::PostInitializeComponents()
 
 void AMAICharacter::OnHealthChanged(AActor* InstigatorActor, UMAttributeComponent* OwningComp, float NewHealth, float Delta)
 {
-
-
     if (Delta < 0.0f) {
 
         if (InstigatorActor != this) {
 
             SetTargetActor(InstigatorActor);
+        }
+
+
+
+        if (ActiveWidget == nullptr) {
+
+            ActiveWidget = CreateWidget<UMWorldUserWidget>(GetWorld(), HealthBarWidgetClass);
+
+            if (ActiveWidget) {
+                ActiveWidget->AttachedActor = this;
+                ActiveWidget->AddToViewport();
+            }
+
         }
 
         GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);

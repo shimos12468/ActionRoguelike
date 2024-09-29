@@ -8,6 +8,8 @@
 
 class UMAttributeComponent;
 class UPawnSensingComponent;
+class UUserWidget;
+class UMWorldUserWidget;
 UCLASS()
 class ACTIONROGUELIKE_API AMAICharacter : public ACharacter
 {
@@ -17,8 +19,17 @@ public:
 	// Sets default values for this character's properties
 	AMAICharacter();
 
+protected:
+	
+	UMWorldUserWidget* ActiveWidget;
+	
+	UPROPERTY(EditDefaultsOnly,Category = "UI")
+	TSubclassOf<UUserWidget> HealthBarWidgetClass;
+
+
 	UPROPERTY(EditAnywhere , Category = "Components")
 	UPawnSensingComponent* PawnSensingComponent;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UMAttributeComponent* AttributeComp;
 	

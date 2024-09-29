@@ -9,6 +9,8 @@
 #include "MAttributeComponent.h"
 #include "EngineUtils.h"
 #include "DrawDebugHelpers.h"
+
+
 AMGameModeBase::AMGameModeBase()
 {
 	SpawnTimerInterval = 2.0f;
@@ -79,3 +81,18 @@ void AMGameModeBase::OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryIn
 
 }
 
+void AMGameModeBase::KillAll()
+{
+	for (TActorIterator<AMAICharacter> It(GetWorld()); It; ++It) {
+
+		AMAICharacter* Bot = *It;
+
+		UMAttributeComponent* AttributeComp = UMAttributeComponent::GetAttributies(Bot);
+
+		if (ensure(AttributeComp) && AttributeComp->IsAlive()) {
+			AttributeComp->Kill(this);
+		}
+
+
+	}
+}

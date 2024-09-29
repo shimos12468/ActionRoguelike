@@ -12,6 +12,11 @@ UMAttributeComponent::UMAttributeComponent()
 	Health = MaxHealth;
 }
 
+bool UMAttributeComponent::Kill(AActor* InstigatorActor)
+{
+	return ApplyHealthChange(InstigatorActor, -GetMaxHealth());
+}
+
 bool UMAttributeComponent::IsAlive() const
 {
 	return Health > 0.0f;
@@ -36,6 +41,10 @@ bool UMAttributeComponent::IsPlayerFullHealth()
 
 bool UMAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
 {
+	if (!GetOwner()->CanBeDamaged()) {
+		return false;
+	}
+
 	float OldHealth = Health;
 	Health += Delta;
 	Health= FMath::Clamp(Health,0.0f,MaxHealth);

@@ -41,6 +41,9 @@ protected:
 	void OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
 public:
 
+	UFUNCTION(Exec)
+	void KillAll();
+
 	AMGameModeBase();
 	virtual void StartPlay() override;
 	

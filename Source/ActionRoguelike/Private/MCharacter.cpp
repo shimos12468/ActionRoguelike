@@ -73,6 +73,11 @@ void AMCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &AMCharacter::PrimaryInteract);
 }
 
+void AMCharacter::HealSelf(float Amount /*= 100*/)
+{
+	AttributeComp->ApplyHealthChange(this, Amount);
+}
+
 void AMCharacter::MoveForward(float Value) {
 
 	FRotator controlRot = GetControlRotation();

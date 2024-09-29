@@ -23,8 +23,6 @@ void UMBTService_CheckHealth::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
 				UMAttributeComponent* AttrebuteComp = Cast<UMAttributeComponent>(MyPawn->GetComponentByClass(UMAttributeComponent::StaticClass()));
 
 				if (ensure(AttrebuteComp)) {
-
-					UE_LOG(LogTemp, Warning, TEXT("Changeing actor"));
 					float CurrentHealth = AttrebuteComp->GetHealth();
 					float Limit = BlackBoardComp->GetValueAsFloat(HealthLimit.SelectedKeyName);
 
