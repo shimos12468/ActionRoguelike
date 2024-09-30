@@ -35,12 +35,23 @@ protected:
 
 	FTimerHandle TimerHandle_SpawnBots;
 	
+
 	UFUNCTION()
 	void SpawnBotTimerElapsed();
+
+	UFUNCTION()
+	void RespawnPlayerElapsed(AController* Controller);
+
+
 	UFUNCTION()
 	void OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
 public:
 
+	
+	UFUNCTION()
+	virtual void OnActorKilled(AActor* VictimActor , AActor* Killer);
+
+	
 	UFUNCTION(Exec)
 	void KillAll();
 

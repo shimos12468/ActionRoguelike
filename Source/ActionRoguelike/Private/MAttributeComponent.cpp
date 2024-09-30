@@ -2,7 +2,11 @@
 
 
 #include "MAttributeComponent.h"
+#include "MGameModeBase.h"
 
+
+
+static TAutoConsoleVariable<float>CVarDamageMultiplier(TEXT("mu.DamageMultiplier"), 1.f, TEXT("Global Multiply Damage Modified for AttributeComponent"), ECVF_Cheat);
 // Sets default values for this component's properties
 UMAttributeComponent::UMAttributeComponent()
 {
@@ -41,8 +45,16 @@ bool UMAttributeComponent::IsPlayerFullHealth()
 
 bool UMAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
 {
-	if (!GetOwner()->CanBeDamaged()) {
+	if (!GetOwner()->CanBeDamaged()&&Delta<0) {
 		return false;
+	}
+
+
+	if (Delta < 0) {
+
+		float DamageMultiplier = CVarDamageMultiplier.GetValueOnGameThread();
+		Delta *= DamageMultiplier;
+
 	}
 
 	float OldHealth = Health;
@@ -50,6 +62,17 @@ bool UMAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 	Health= FMath::Clamp(Health,0.0f,MaxHealth);
 	float ActualDelta = Health - OldHealth;
 	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
+
+	if (Delta < 0 && Health <= 0) {
+
+		AMGameModeBase* GM = GetWorld()->GetAuthGameMode<AMGameModeBase>();
+
+		if (GM) {
+
+			GM->OnActorKilled(GetOwner(), InstigatorActor);
+		}
+
+	}
 
 	return ActualDelta!=0;
 }

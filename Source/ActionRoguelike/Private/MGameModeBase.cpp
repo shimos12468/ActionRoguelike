@@ -9,7 +9,10 @@
 #include "MAttributeComponent.h"
 #include "EngineUtils.h"
 #include "DrawDebugHelpers.h"
+#include "MCharacter.h"
 
+
+static TAutoConsoleVariable<bool>CVarSpawnBots(TEXT("mu.SpawnBots"), true, TEXT("Enable/Disable Spawning bots via timer"), ECVF_Cheat);
 
 AMGameModeBase::AMGameModeBase()
 {
@@ -25,6 +28,11 @@ void AMGameModeBase::StartPlay()
 
 void AMGameModeBase::SpawnBotTimerElapsed()
 {
+
+	if (!CVarSpawnBots.GetValueOnGameThread()) {
+		return;
+	}
+
 
 	int32 NumOfAliveBots = 0;
 	for (TActorIterator<AMAICharacter> It(GetWorld()); It; ++It) {
@@ -96,3 +104,39 @@ void AMGameModeBase::KillAll()
 
 	}
 }
+
+
+void AMGameModeBase::RespawnPlayerElapsed(AController* Controller)
+{
+
+	if (ensure(Controller)) {
+
+		Controller->UnPossess();
+
+		RestartPlayer(Controller);
+	}
+
+
+}
+
+void AMGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
+{
+	AMCharacter* Player = Cast<AMCharacter>(VictimActor);
+
+	if (Player) {
+
+		FTimerHandle TimeHandle_RespawnDelay;
+
+		FTimerDelegate Delegate;
+
+		float RespawnDelay = 2.f;
+
+		Delegate.BindUFunction(this, "RespawnPlayerElapsed",Player->GetController());
+
+		GetWorldTimerManager().SetTimer(TimeHandle_RespawnDelay,Delegate,RespawnDelay, false);
+
+	}
+
+
+}
+

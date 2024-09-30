@@ -9,12 +9,17 @@
 #include "MAttributeComponent.h"
 #include "BrainComponent.h"
 #include "MWorldUserWidget.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 // Sets default values
 AMAICharacter::AMAICharacter()
 {
     PawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensingComp");
     AttributeComp = CreateDefaultSubobject<UMAttributeComponent>("AttributeComp");
     AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+    GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
+    GetMesh()->SetGenerateOverlapEvents(true);
 }
 
 void AMAICharacter::PostInitializeComponents()
@@ -62,7 +67,8 @@ void AMAICharacter::OnHealthChanged(AActor* InstigatorActor, UMAttributeComponen
 
             GetMesh()->SetAllBodiesSimulatePhysics(true);
             GetMesh()->SetCollisionProfileName("Ragdoll");
-
+            GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+            GetCharacterMovement()->DisableMovement();
             SetLifeSpan(10.0f);
         }
 

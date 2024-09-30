@@ -38,6 +38,11 @@ void AMCharacter::PostInitializeComponents()
 }
 
 
+FVector AMCharacter::GetPawnViewLocation() const
+{
+	return CameraComp->GetComponentLocation();
+}
+
 void AMCharacter::OnHealthChanged(AActor* InstigatorActor, UMAttributeComponent* OwningComp, float NewHealth, float Delta)
 {
 

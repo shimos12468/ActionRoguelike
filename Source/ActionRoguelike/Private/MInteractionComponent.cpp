@@ -3,6 +3,10 @@
 
 #include "MInteractionComponent.h"
 #include "DrawDebugHelpers.h"
+
+static TAutoConsoleVariable<bool>CVarDebugDrawInteraction(TEXT("mu.InteractionDebugDraw"), true, TEXT("Enable Debug Logs to the InteractionComponent"), ECVF_Cheat);
+
+
 // Sets default values for this component's properties
 UMInteractionComponent::UMInteractionComponent()
 {
@@ -10,10 +14,9 @@ UMInteractionComponent::UMInteractionComponent()
 }
 
 
-
-
 void UMInteractionComponent::PrimaryInteract() {
 
+	bool bDebugDraw = CVarDebugDrawInteraction.GetValueOnGameThread();
 
 	AActor* MyOwner = GetOwner();
 	
@@ -41,10 +44,13 @@ void UMInteractionComponent::PrimaryInteract() {
 	FColor Color = bBlockingHit ? FColor::Green : FColor::Red;
 	for (FHitResult Hit:Hits)
 	{
+		if (bDebugDraw) {
+			DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, Color, false, 2.00);
+		}
 		AActor* HitActor = Hit.GetActor();
 		if (HitActor) {
 
-			DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, Color, false, 2.00);
+			
 			if (HitActor->Implements<UMGameplayInterface>()) {
 
 				APawn* MyPawn = Cast<APawn>(MyOwner);
@@ -55,12 +61,13 @@ void UMInteractionComponent::PrimaryInteract() {
 
 		}
 
-		
 	}
 
 	
-	
-	DrawDebugLine(GetWorld(), EyeLocation, End, Color, false, 2.00, 2.00);
+	if (bDebugDraw) {
+
+		DrawDebugLine(GetWorld(), EyeLocation, End, Color, false, 2.00,0,2.00);
+	}
 
 
 }

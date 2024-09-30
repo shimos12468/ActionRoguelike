@@ -10,6 +10,7 @@
 #include "Sound\SoundCue.h"
 #include <Components/AudioComponent.h>
 #include "MProjectileBase.h"
+#include "MGameplayFunctionLibrary.h"
 // Sets default values
 AMMagicProjectile::AMMagicProjectile()
 {
@@ -22,8 +23,6 @@ void AMMagicProjectile::PostInitializeComponents() {
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &AMMagicProjectile::OnActorOverlap);
 
 }
-
-
 
 // Called when the game starts or when spawned
 void AMMagicProjectile::BeginPlay()
@@ -49,24 +48,17 @@ void AMMagicProjectile::ApplyDamage(const FHitResult& Hit, AActor* OwnerActor, A
 	UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, Hit.ImpactPoint);
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, GetActorLocation(), GetActorRotation());
 	UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraShakeAsset, Hit.ImpactPoint, 500, 2000);
+	
+	/*
 	OwnerActor = GetInstigator();
-	if (OwnerActor) {
-
-		UMAttributeComponent* ActorAttributies = Cast<UMAttributeComponent>(OwnerActor->FindComponentByClass(UMAttributeComponent::StaticClass()));
-
-		if (AttributeComp) {
+	if (AttributeComp) {
 
 			AttributeComp->ApplyHealthChange(GetInstigator(), -1 * DamageAmount);
-			Destroy(true);
-		}
+	}*/
 
-	}
-	else {
-		if (AttributeComp) {
+	if (UMGameplayFunctionLibrary::ApplyDirectionalDamage(OwnerActor, OtherActor, DamageAmount, Hit)) {
 
-			AttributeComp->ApplyHealthChange(GetInstigator(), -1 * DamageAmount);
-			Destroy(true);
-		}
+	Explode();
 	}
 	Destroy(true);
 }
