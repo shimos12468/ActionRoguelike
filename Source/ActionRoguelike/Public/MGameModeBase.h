@@ -33,6 +33,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly,Category = "AI")
 	float SpawnTimerInterval;
 
+	UPROPERTY(EditAnywhere, Category = "Game")
+	TArray<TSubclassOf<AActor>>Powerups;
+
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Game")
+	UEnvQuery* SpawnPowerupsQuary;
+
+
 	FTimerHandle TimerHandle_SpawnBots;
 	
 
@@ -45,6 +53,11 @@ protected:
 
 	UFUNCTION()
 	void OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+
+	UFUNCTION()
+	void OnSpawnPowerUpQuaryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+
+	
 public:
 
 	

@@ -22,7 +22,11 @@ bool UMGameplayFunctionLibrary::ApplyDirectionalDamage(AActor* DamageCauser, AAc
 		 UPrimitiveComponent* HitComp= Hit.GetComponent();
 		 if (HitComp && HitComp->IsSimulatingPhysics(Hit.BoneName)) {
 
-			 HitComp->AddImpulseAtLocation(-Hit.ImpactNormal * 300000.0f, Hit.ImpactPoint, Hit.BoneName);
+
+			 //dIRECTION IS TARGET - ORIGIN
+			 FVector Direction = Hit.TraceEnd - Hit.TraceStart;
+			 Direction.Normalize();
+			 HitComp->AddImpulseAtLocation(Direction* 300000.0f, Hit.ImpactPoint, Hit.BoneName);
 		 }
 
 

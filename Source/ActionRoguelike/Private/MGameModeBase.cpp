@@ -10,7 +10,7 @@
 #include "EngineUtils.h"
 #include "DrawDebugHelpers.h"
 #include "MCharacter.h"
-
+#include "MPlayerState.h"
 
 static TAutoConsoleVariable<bool>CVarSpawnBots(TEXT("mu.SpawnBots"), true, TEXT("Enable/Disable Spawning bots via timer"), ECVF_Cheat);
 
@@ -24,7 +24,34 @@ void AMGameModeBase::StartPlay()
 	Super::StartPlay();
 
 	GetWorldTimerManager().SetTimer(TimerHandle_SpawnBots, this, &AMGameModeBase::SpawnBotTimerElapsed,SpawnTimerInterval,true);
+
+
+	UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(this, SpawnPowerupsQuary, this, EEnvQueryRunMode::AllMatching, nullptr);
+
+	if (ensure(QueryInstance)) {
+		QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &AMGameModeBase::OnSpawnPowerUpQuaryCompleted);
+	}
+
+
 }
+
+
+void AMGameModeBase::OnSpawnPowerUpQuaryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus)
+{
+	UE_LOG(LogTemp, Warning, TEXT("RPWEUIRPWOEURJPW"));
+	TArray<FVector> Locations;
+	QueryInstance->GetQueryResultsAsLocations(Locations);
+	for (int i = 0; i < Locations.Num(); i++) {
+
+
+		int number= FMath::RandRange(0, Powerups.Num()-1);
+
+		GetWorld()->SpawnActor<AActor>(Powerups[number], Locations[i], FRotator::ZeroRotator);
+	}
+
+}
+
+
 
 void AMGameModeBase::SpawnBotTimerElapsed()
 {
@@ -113,7 +140,9 @@ void AMGameModeBase::RespawnPlayerElapsed(AController* Controller)
 
 		Controller->UnPossess();
 
+		
 		RestartPlayer(Controller);
+		
 	}
 
 
@@ -132,8 +161,24 @@ void AMGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 		float RespawnDelay = 2.f;
 
 		Delegate.BindUFunction(this, "RespawnPlayerElapsed",Player->GetController());
-
 		GetWorldTimerManager().SetTimer(TimeHandle_RespawnDelay,Delegate,RespawnDelay, false);
+
+	}
+
+	AMAICharacter* AI= Cast<AMAICharacter>(VictimActor);
+
+	APawn* killerPawn = Cast<APawn>(Killer);
+	if (AI) {
+
+		AMPlayerState* PS = killerPawn->GetPlayerState<AMPlayerState>();
+
+		UMAttributeComponent* VictimAttributeComp = UMAttributeComponent::GetAttributies(VictimActor);
+
+		if (ensure(PS)) {
+
+			
+			PS->AddCredit(VictimActor, VictimAttributeComp->KilledCreditAmount);
+		}
 
 	}
 

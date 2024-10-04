@@ -10,35 +10,12 @@ class USpringArmComponent;
 class UMInteractionComponent;
 class UAnimMontage;
 class UMAttributeComponent;
-
+class UMActionComponent;
 UCLASS()
 class ACTIONROGUELIKE_API AMCharacter : public ACharacter
 {
 	GENERATED_BODY()
-
-protected:
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<AActor> ProjectileClass;
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<AActor> ProjectileClass2;
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	UAnimMontage* AttackAnim;
-
-	UPROPERTY(EditAnywhere, Category = "Ability")
-	TSubclassOf<AActor> PrimaryAbilityProjectile;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Effects")
-	UParticleSystem* SpawnVFX;
-
-	FTimerHandle TimerHandle_PrimaryAttrack;
-
-	FTimerHandle TimerHandle_SecondaryAttrack;
 	
-	FTimerHandle TimerHandle_PrimaryAbility;
-
 public:
 	// Sets default values for this character's properties
 	AMCharacter();
@@ -55,43 +32,42 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UMInteractionComponent* InteractionComp;
 
-	UPROPERTY(VisibleAnywhere ,BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere ,BlueprintReadOnly , Category = "Component")
 	UMAttributeComponent* AttributeComp;
-
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
+	UMActionComponent* ActionComp;
 	
 
 	void MoveForward(float Value); 
-	
 	void MoveRight(float Value);
 	
+
+	void SprintStart();
+	void SprintStop();
+	
 	void PrimaryAttack();
-	
-	void PrimaryAttack_TimeElapsed();
-	
-	void SecondaryAttack();
-
-	void SecondaryAttack_TimeElapsed();
-
-	void PrimaryAbility();
-
-	void PrimaryAbility_TimeElapsed();
+	void BlackHole();
+	void Dash();
 
 	void PrimaryInteract();
-
-
+	
+	UFUNCTION()
+	void OnHealthChanged(AActor* InstigatorActor, UMAttributeComponent* OwningComp, float NewHealth, float Delta);
+	
 	virtual void PostInitializeComponents()override;
+	virtual void BeginPlay()override;
 
 	virtual FVector GetPawnViewLocation()const override;
 
 public:	
 
 
-	// Called to bind functionality to input
+
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	UFUNCTION(Exec)
 	void HealSelf(float Amount = 100);
 
-	UFUNCTION()
-	void OnHealthChanged(AActor* InstigatorActor, UMAttributeComponent* OwningComp, float NewHealth, float Delta);
+	
 
 };

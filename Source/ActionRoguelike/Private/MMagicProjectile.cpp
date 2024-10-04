@@ -49,13 +49,6 @@ void AMMagicProjectile::ApplyDamage(const FHitResult& Hit, AActor* OwnerActor, A
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, GetActorLocation(), GetActorRotation());
 	UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraShakeAsset, Hit.ImpactPoint, 500, 2000);
 	
-	/*
-	OwnerActor = GetInstigator();
-	if (AttributeComp) {
-
-			AttributeComp->ApplyHealthChange(GetInstigator(), -1 * DamageAmount);
-	}*/
-
 	if (UMGameplayFunctionLibrary::ApplyDirectionalDamage(OwnerActor, OtherActor, DamageAmount, Hit)) {
 
 	Explode();

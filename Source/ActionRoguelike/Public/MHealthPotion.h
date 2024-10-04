@@ -22,6 +22,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Attributes")
 	float HealthAmount;
 
-	FTimerHandle TimerHandle_DeactivateMesh;
+	
+	UPROPERTY(EditAnywhere, Category = "Attributes")
+	float Cost;
+
 
 };

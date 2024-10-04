@@ -7,6 +7,7 @@
 #include "MAttributeComponent.generated.h"
 
 
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChanged, AActor*, InstigatorActor, UMAttributeComponent*, OwningComp, float, NewHealth, float, Delta);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -24,7 +25,7 @@ public:
 	static bool IsActorAlive(AActor* Actor);
 
 
-protected:
+public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Atributes")
 	float MaxHealth;
@@ -32,13 +33,19 @@ protected:
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category ="Atributes")
 	float Health;
 
-
-
-public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Atributes")
+	float Credits;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Atributes")
+	float KilledCreditAmount;
 
 
 	UFUNCTION(BlueprintCallable)
 	bool Kill(AActor* InstigatorActor);
+
+
+
+	
+
 
 	UFUNCTION(BlueprintCallable)
 	bool IsAlive() const;

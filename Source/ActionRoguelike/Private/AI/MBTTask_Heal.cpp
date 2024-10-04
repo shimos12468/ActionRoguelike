@@ -5,6 +5,8 @@
 #include "AIModule/Classes/AIController.h"
 #include "MAttributeComponent.h"
 #include "AIModule/Classes/BehaviorTree/BlackboardComponent.h"
+#include "MCharacter.h"
+#include "MPlayerState.h"
 
 EBTNodeResult::Type UMBTTask_Heal::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
@@ -24,9 +26,24 @@ EBTNodeResult::Type UMBTTask_Heal::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 	float CorrectDelta = AttributeComp->GetMaxHealth() - AttributeComp->GetHealth();
 	AttributeComp->ApplyHealthChange(MyPawn ,CorrectDelta);
 	
+
+
 	UBlackboardComponent* BlackBoardComp = OwnerComp.GetBlackboardComponent();
 	BlackBoardComp->SetValueAsBool(HealthKey.SelectedKeyName, false);
 	
+	
+	AMCharacter* Target= Cast<AMCharacter>(BlackBoardComp->GetValueAsObject("TargetActor"));
+	if (Target) {
+
+		AMPlayerState* PS = Target->GetPlayerState<AMPlayerState>();
+		if (PS) {
+
+			PS->AddCredit(MyPawn, 20);
+		}
+		
+	}
+
+
 	return EBTNodeResult::Succeeded;
 
 }

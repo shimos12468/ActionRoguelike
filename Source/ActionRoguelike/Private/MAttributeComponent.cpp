@@ -3,6 +3,7 @@
 
 #include "MAttributeComponent.h"
 #include "MGameModeBase.h"
+#include "MathUtil.h"
 
 
 
@@ -14,6 +15,9 @@ UMAttributeComponent::UMAttributeComponent()
 	// off to improve performance if you don't need them.
 	MaxHealth = 100;
 	Health = MaxHealth;
+	Credits = 0;
+	KilledCreditAmount = 30;
+
 }
 
 bool UMAttributeComponent::Kill(AActor* InstigatorActor)
@@ -95,3 +99,4 @@ bool UMAttributeComponent::IsActorAlive(AActor* Actor)
 	}
 	return false;
 }
+

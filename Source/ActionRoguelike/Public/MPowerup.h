@@ -18,6 +18,9 @@ public:
 
 	void Deactivate();
 	void Activate();
+
+	FTimerHandle TimerHandle_DeactivateMesh;
+
 protected:
 	UPROPERTY(VisibleAnywhere)
 		UStaticMeshComponent* BaseMesh;
