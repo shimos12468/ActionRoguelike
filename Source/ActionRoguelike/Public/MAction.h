@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "GameplayTagContainer.h"
 #include "MAction.generated.h"
-
+class UWorld;
+class UMActionComponent;
 /**
  * 
  */
@@ -14,13 +16,35 @@ class ACTIONROGUELIKE_API UMAction : public UObject
 {
 	GENERATED_BODY()
 	
+protected:
 
+
+	UFUNCTION(BlueprintCallable ,Category = "Action")
+	UMActionComponent* GetOwningComponent()const;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Tags")
+		FGameplayTagContainer GrantsTags;
+	UPROPERTY(EditDefaultsOnly, Category = "Tags")
+		FGameplayTagContainer BlockedTags;
+
+	bool bIsRunning = false;
 public:
+
+
+	UPROPERTY(EditDefaultsOnly,Category = "Action")
+	bool bIsAutoStart;
+
+	UFUNCTION(BlueprintCallable, Category = "Action")
+	bool IsRunning()const;
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Action")
+	bool CanStart(AActor* Instigator);
+
 
 	UFUNCTION(BlueprintNativeEvent,Category="Action")
 	void StartAction(AActor* Instigator);
 
-	UFUNCTION(BlueprintNativeEvent, Category = "Action")
+	UFUNCTION(BlueprintCallable,BlueprintNativeEvent, Category = "Action")
 	void StopAction(AActor* Instigator);
 
 	

@@ -22,7 +22,7 @@ void UMActionComponent::BeginPlay()
 
 	for (TSubclassOf<UMAction>ActionClass : DefaultActions) {
 
-		AddAction(ActionClass);
+		AddAction(GetOwner(), ActionClass);
 	}
 	
 }
@@ -33,10 +33,12 @@ void UMActionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	FString DebugMsg = GetNameSafe(GetOwner()) + "  :  " + ActiveGameplayTags.ToStringSimple();
+	GEngine->AddOnScreenDebugMessage(-1, 0, FColor::White, DebugMsg);
 	// ...
 }
 
-void UMActionComponent::AddAction(TSubclassOf<UMAction> ActionClass)
+void UMActionComponent::AddAction(AActor* Instigator ,TSubclassOf<UMAction> ActionClass)
 {
 	if (!ensure(ActionClass)) {
 		return;
@@ -46,9 +48,24 @@ void UMActionComponent::AddAction(TSubclassOf<UMAction> ActionClass)
 	if (ensure(NewAction)) {
 
 		Actions.Add(NewAction);
+
+		if (NewAction->bIsAutoStart&&ensure(NewAction->CanStart(Instigator))) {
+
+			NewAction->StartAction(Instigator);
+		}
+
 	}
 
 
+}
+
+void UMActionComponent::RemoveAction(UMAction* Action)
+{
+	if (!ensure(Action && !Action->IsRunning())) {
+		return;
+	}
+
+	Actions.Remove(Action);
 }
 
 bool UMActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
@@ -56,6 +73,14 @@ bool UMActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 	for (UMAction* Action : Actions) {
 
 		if (Action && Action->ActionName == ActionName) {
+
+			if (!Action->CanStart(Instigator)) {
+
+				FString DebugMsg = GetNameSafe(GetOwner()) + "  :  " + ActiveGameplayTags.ToStringSimple();
+				GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, DebugMsg);
+
+				continue;
+			}
 
 			Action->StartAction(Instigator);
 			return true;
@@ -70,6 +95,10 @@ bool UMActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 	for (UMAction* Action : Actions) {
 
 		if (Action && Action->ActionName == ActionName) {
+
+			if (!Action->IsRunning()) {
+				continue;
+			}
 
 			Action->StopAction(Instigator);
 			return true;

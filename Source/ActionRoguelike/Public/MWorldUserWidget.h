@@ -20,7 +20,7 @@ class ACTIONROGUELIKE_API UMWorldUserWidget : public UUserWidget
 public:
 
 	UPROPERTY(EditAnywhere,Category ="UI")
-	float WorldOffset;
+	FVector WorldOffset;
 	UPROPERTY(meta = (BindWidget))
 	USizeBox* ParentSizeBox;
 

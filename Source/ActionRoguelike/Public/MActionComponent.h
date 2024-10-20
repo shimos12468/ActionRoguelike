@@ -4,10 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "GameplayTagContainer.h"
 #include "MActionComponent.generated.h"
 
 
 class UMAction;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ACTIONROGUELIKE_API UMActionComponent : public UActorComponent
 {
@@ -15,8 +17,17 @@ class ACTIONROGUELIKE_API UMActionComponent : public UActorComponent
 
 public:	
 
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "Tags")
+	FGameplayTagContainer ActiveGameplayTags;
+
+
 	UFUNCTION(BlueprintCallable,Category = "Action")
-	void AddAction(TSubclassOf<UMAction> ActionClass);
+	void AddAction(AActor* Instigator,TSubclassOf<UMAction> ActionClass);
+
+
+	UFUNCTION(BlueprintCallable, Category = "Action")
+	void RemoveAction(UMAction* Action);
+
 
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	bool StartActionByName(AActor* Instigator,FName ActionName);

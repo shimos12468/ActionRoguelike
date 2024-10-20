@@ -11,6 +11,8 @@
 #include <Components/AudioComponent.h>
 #include "MProjectileBase.h"
 #include "MGameplayFunctionLibrary.h"
+#include "MActionComponent.h"
+#include "MActionEffect.h"
 // Sets default values
 AMMagicProjectile::AMMagicProjectile()
 {
@@ -41,6 +43,19 @@ void AMMagicProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* Ot
 		ApplyDamage(Hit, OwnerActor, OtherActor);
 	}
 }
+void AMMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+
+	AActor* OwnerActor = GetInstigator();
+
+	if (OtherActor && OtherActor != OwnerActor) {
+
+		ApplyDamage(SweepResult, OwnerActor, OtherActor);
+
+	}
+
+
+}
 
 void AMMagicProjectile::ApplyDamage(const FHitResult& Hit, AActor* OwnerActor, AActor* OtherActor)
 {
@@ -49,25 +64,26 @@ void AMMagicProjectile::ApplyDamage(const FHitResult& Hit, AActor* OwnerActor, A
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, GetActorLocation(), GetActorRotation());
 	UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraShakeAsset, Hit.ImpactPoint, 500, 2000);
 	
+	UMActionComponent* ActionComp = Cast<UMActionComponent>(OtherActor->GetComponentByClass(UMActionComponent::StaticClass()));
+
+	if (ActionComp&&ActionComp->ActiveGameplayTags.HasTag(ParryTag))
+	{
+		MovementComp->Velocity = -MovementComp->Velocity;
+
+		SetInstigator(Cast<APawn>(OtherActor));
+		return;
+	}
+
 	if (UMGameplayFunctionLibrary::ApplyDirectionalDamage(OwnerActor, OtherActor, DamageAmount, Hit)) {
 
-	Explode();
+		Explode();
+
+		if (ActionComp&&BurningActionClass) {
+			ActionComp->AddAction(GetInstigator(),BurningActionClass);
+		}
 	}
 	Destroy(true);
 }
 
-void AMMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	
-	AActor* OwnerActor = GetInstigator();
-
-	if (OtherActor&&OtherActor!= OwnerActor) {
-
-		ApplyDamage(SweepResult, OwnerActor, OtherActor);
-	
-	}
-
-
-}
 
 

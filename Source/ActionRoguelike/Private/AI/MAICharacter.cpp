@@ -11,11 +11,13 @@
 #include "MWorldUserWidget.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "MActionComponent.h"
 // Sets default values
 AMAICharacter::AMAICharacter()
 {
     PawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensingComp");
     AttributeComp = CreateDefaultSubobject<UMAttributeComponent>("AttributeComp");
+    ActionComp = CreateDefaultSubobject<UMActionComponent>("ActionComp");
     AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
     GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);

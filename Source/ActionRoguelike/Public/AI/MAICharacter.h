@@ -10,6 +10,7 @@ class UMAttributeComponent;
 class UPawnSensingComponent;
 class UUserWidget;
 class UMWorldUserWidget;
+class UMActionComponent;
 UCLASS()
 class ACTIONROGUELIKE_API AMAICharacter : public ACharacter
 {
@@ -30,9 +31,12 @@ protected:
 	UPROPERTY(EditAnywhere , Category = "Components")
 	UPawnSensingComponent* PawnSensingComponent;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly ,Category = "Components")
 	UMAttributeComponent* AttributeComp;
 	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UMActionComponent* ActionComp;
+
 	UFUNCTION()
 	void SetTargetActor(AActor* TargetActor);
 

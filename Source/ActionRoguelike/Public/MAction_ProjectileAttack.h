@@ -30,6 +30,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Attack")
 		float AttackAnimDelay;
 
+	UPROPERTY(EditAnywhere, Category = "Attributes")
+	float RageCost;
+
 	UPROPERTY(EditAnywhere, Category = "Attack")
 		UAnimMontage* AttackAnim;
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")

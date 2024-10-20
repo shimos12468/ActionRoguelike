@@ -6,10 +6,12 @@
 #include "Kismet/GameplayStatics.h"
 #include "Animation/AnimMontage.h"
 #include "Particles/ParticleSystem.h"
+#include "MAttributeComponent.h"
 UMAction_ProjectileAttack::UMAction_ProjectileAttack()
 {
 	AttackAnimDelay = 0.2f;
 	HandSocketName = "Muzzle_01";
+	RageCost = 0;
 }
 
 void UMAction_ProjectileAttack::StartAction_Implementation(AActor* Instigator)
@@ -20,6 +22,17 @@ void UMAction_ProjectileAttack::StartAction_Implementation(AActor* Instigator)
 
 	if (Character) {
 
+
+		UMAttributeComponent* AttributeComp = UMAttributeComponent::GetAttributies(Instigator);
+
+
+		if (AttributeComp->GetRage() < RageCost) {
+			
+			StopAction(Instigator);;
+			
+			return;
+		}
+		AttributeComp->RemoveRage(Instigator,RageCost);
 		Character->PlayAnimMontage(AttackAnim);
 		UGameplayStatics::SpawnEmitterAttached(SpawnVFX, Character->GetMesh(), HandSocketName, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
 

@@ -6,7 +6,6 @@
 #include "MathUtil.h"
 
 
-
 static TAutoConsoleVariable<float>CVarDamageMultiplier(TEXT("mu.DamageMultiplier"), 1.f, TEXT("Global Multiply Damage Modified for AttributeComponent"), ECVF_Cheat);
 // Sets default values for this component's properties
 UMAttributeComponent::UMAttributeComponent()
@@ -15,38 +14,11 @@ UMAttributeComponent::UMAttributeComponent()
 	// off to improve performance if you don't need them.
 	MaxHealth = 100;
 	Health = MaxHealth;
-	Credits = 0;
+	MaxRage = 50;
+	Rage = 0;
 	KilledCreditAmount = 30;
 
 }
-
-bool UMAttributeComponent::Kill(AActor* InstigatorActor)
-{
-	return ApplyHealthChange(InstigatorActor, -GetMaxHealth());
-}
-
-bool UMAttributeComponent::IsAlive() const
-{
-	return Health > 0.0f;
-}
-
-
-
-float UMAttributeComponent::GetHealth()
-{
-	return Health;
-}
-
-float UMAttributeComponent::GetMaxHealth()
-{
-	return MaxHealth;
-}
-
-bool UMAttributeComponent::IsPlayerFullHealth()
-{
-	return Health == MaxHealth;
-}
-
 bool UMAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
 {
 	if (!GetOwner()->CanBeDamaged()&&Delta<0) {
@@ -56,6 +28,7 @@ bool UMAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 
 	if (Delta < 0) {
 
+		AddRage(InstigatorActor,(-Delta) / 5);
 		float DamageMultiplier = CVarDamageMultiplier.GetValueOnGameThread();
 		Delta *= DamageMultiplier;
 
@@ -98,5 +71,57 @@ bool UMAttributeComponent::IsActorAlive(AActor* Actor)
 		return Attributies->IsAlive();
 	}
 	return false;
+}
+
+void UMAttributeComponent::RemoveRage(AActor* InstigatorActor,float RageCost)
+{
+	Rage -= RageCost;
+	Rage = FMath::Clamp(Rage, 0, MaxRage);
+	OnRageChanged.Broadcast(InstigatorActor, this, Rage, RageCost);
+}
+
+void UMAttributeComponent::AddRage(AActor* InstigatorActor,float RageAmount)
+{
+	Rage += RageAmount;
+	Rage = FMath::Clamp(Rage, 0, MaxRage);
+	OnRageChanged.Broadcast(InstigatorActor, this, Rage, RageAmount);
+}
+
+
+bool UMAttributeComponent::Kill(AActor* InstigatorActor)
+{
+	return ApplyHealthChange(InstigatorActor, -GetMaxHealth());
+}
+bool UMAttributeComponent::IsAlive() const
+{
+	return Health > 0.0f;
+}
+
+float UMAttributeComponent::GetHealth()
+{
+	return Health;
+}
+
+float UMAttributeComponent::GetMaxHealth()
+{
+	return MaxHealth;
+}
+
+float UMAttributeComponent::GetRage()
+{
+	return Rage;
+}
+
+
+
+float UMAttributeComponent::GetMaxRage()
+{
+	return MaxRage;
+}
+
+
+bool UMAttributeComponent::IsPlayerFullHealth()
+{
+	return Health == MaxHealth;
 }
 
