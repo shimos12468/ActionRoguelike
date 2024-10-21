@@ -63,3 +63,8 @@ bool UMAction::IsRunning() const
 	return bIsRunning;
 }
 
+FName UMAction::GetActionName()
+{
+	return ActionName;
+}
+

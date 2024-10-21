@@ -35,6 +35,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	bool StopActionByName(AActor* Instigator, FName ActionName);
 
+	UFUNCTION(BlueprintCallable, Category = "Action")
+	TArray<UMAction*> GetActionsList();
 
 	UMActionComponent();
 

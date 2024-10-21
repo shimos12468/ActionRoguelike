@@ -28,14 +28,18 @@ protected:
 		FGameplayTagContainer BlockedTags;
 
 	bool bIsRunning = false;
+
+
 public:
-
-
 	UPROPERTY(EditDefaultsOnly,Category = "Action")
 	bool bIsAutoStart;
 
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	bool IsRunning()const;
+
+
+	UFUNCTION(BlueprintCallable, Category = "Action")
+	FName GetActionName();
 
 	UFUNCTION(BlueprintNativeEvent, Category = "Action")
 	bool CanStart(AActor* Instigator);

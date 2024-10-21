@@ -42,7 +42,7 @@ void UMThornActionEffect::OnHealthChanged(AActor* InstigatorActor, UMAttributeCo
 	AActor* TargetActor = ActionComp->GetOwner();
 
 	UMAttributeComponent* attrubute = UMAttributeComponent::GetAttributies(InstigatorActor);
-	const int DamageBack = FMath::CeilToInt(Delta/5);
+	const int DamageBack = FMath::CeilToInt(Delta/2);
 	
 	attrubute->ApplyHealthChange(TargetActor,DamageBack);
 }

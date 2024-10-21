@@ -45,8 +45,17 @@ void UMActionComponent::AddAction(AActor* Instigator ,TSubclassOf<UMAction> Acti
 	}
 
 	UMAction* NewAction = NewObject<UMAction>(this, ActionClass);
-	if (ensure(NewAction)) {
+	bool bAddAction = true;
+	for(UMAction* var : Actions)
+	{
+		if (var->ActionName == NewAction->ActionName) {
+			bAddAction = false;
+			break;
+		}
+	}
 
+
+	if (ensure(NewAction) &&bAddAction ) {
 		Actions.Add(NewAction);
 
 		if (NewAction->bIsAutoStart&&ensure(NewAction->CanStart(Instigator))) {
@@ -89,6 +98,9 @@ bool UMActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 	return false;
 }
 
+
+
+
 bool UMActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 {
 
@@ -106,5 +118,11 @@ bool UMActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 	}
 	return false;
 
+}
+
+TArray<UMAction*> UMActionComponent::GetActionsList()
+{
+	return Actions;
+	
 }
 

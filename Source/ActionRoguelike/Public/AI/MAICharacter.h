@@ -23,10 +23,12 @@ public:
 protected:
 	
 	UMWorldUserWidget* ActiveWidget;
-	
+	UMWorldUserWidget* SpottedPlayerWidget;
 	UPROPERTY(EditDefaultsOnly,Category = "UI")
 	TSubclassOf<UUserWidget> HealthBarWidgetClass;
 
+	UPROPERTY(EditDefaultsOnly,Category="UI")
+	TSubclassOf<UUserWidget>playerSpottedWidgetClass;
 
 	UPROPERTY(EditAnywhere , Category = "Components")
 	UPawnSensingComponent* PawnSensingComponent;
@@ -37,11 +39,21 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UMActionComponent* ActionComp;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Attributes")
+	float ActivationDuration;
+
+	AActor* TargetActor;
+
+	FTimerHandle TimerHandle_DeactivateSpottedPlayerWidget;
+
 	UFUNCTION()
-	void SetTargetActor(AActor* TargetActor);
+	void SetTargetActor(AActor* NewTargetActor);
 
 	UFUNCTION()
 	void OnPawnSeen(APawn* Pawn);
+
+	UFUNCTION()
+	void DeactivateSpottedPlayerWidget();
 
 	virtual void PostInitializeComponents() override;
 	UFUNCTION()

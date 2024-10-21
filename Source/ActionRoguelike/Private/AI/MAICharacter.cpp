@@ -19,7 +19,7 @@ AMAICharacter::AMAICharacter()
     AttributeComp = CreateDefaultSubobject<UMAttributeComponent>("AttributeComp");
     ActionComp = CreateDefaultSubobject<UMActionComponent>("ActionComp");
     AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
-
+    ActivationDuration = 1.0f;
     GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
     GetMesh()->SetGenerateOverlapEvents(true);
 }
@@ -40,9 +40,6 @@ void AMAICharacter::OnHealthChanged(AActor* InstigatorActor, UMAttributeComponen
 
             SetTargetActor(InstigatorActor);
         }
-
-
-
         if (ActiveWidget == nullptr) {
 
             ActiveWidget = CreateWidget<UMWorldUserWidget>(GetWorld(), HealthBarWidgetClass);
@@ -81,11 +78,27 @@ void AMAICharacter::OnHealthChanged(AActor* InstigatorActor, UMAttributeComponen
 }
 
 
-void AMAICharacter::SetTargetActor(AActor* TargetActor)
+void AMAICharacter::SetTargetActor(AActor* NewTargetActor)
 {
 	AAIController* AIC = Cast<AAIController>(GetController());
 
-    AIC->GetBlackboardComponent()->SetValueAsObject("TargetActor", TargetActor);
+    if (TargetActor == nullptr||TargetActor!=NewTargetActor) {
+		
+        if (SpottedPlayerWidget == nullptr) {
+
+            SpottedPlayerWidget= CreateWidget<UMWorldUserWidget>(GetWorld(), playerSpottedWidgetClass);
+        }
+
+        SpottedPlayerWidget->AttachedActor = this;
+        SpottedPlayerWidget->AddToViewport();
+
+        GetWorldTimerManager().SetTimer(TimerHandle_DeactivateSpottedPlayerWidget, this, &AMAICharacter::DeactivateSpottedPlayerWidget, ActivationDuration);
+
+        TargetActor = NewTargetActor;
+    }
+
+
+    AIC->GetBlackboardComponent()->SetValueAsObject("TargetActor", NewTargetActor);
 
 }
 
@@ -94,6 +107,9 @@ void AMAICharacter::OnPawnSeen(APawn* Pawn)
 
     SetTargetActor(Pawn);
 
+
+    
+
     AAIController* AIC = Cast<AAIController>(GetController());
     UBlackboardComponent* BBComp = AIC->GetBlackboardComponent();
     BBComp->SetValueAsFloat("HealthLimit", 60);
@@ -101,5 +117,10 @@ void AMAICharacter::OnPawnSeen(APawn* Pawn)
     
 }
 
+void AMAICharacter::DeactivateSpottedPlayerWidget()
+{
+    SpottedPlayerWidget->AttachedActor = nullptr;
+    SpottedPlayerWidget->RemoveFromViewport();
+}
 
 
