@@ -2,6 +2,7 @@
 
 
 #include "MItemChest.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AMItemChest::AMItemChest()
@@ -14,11 +15,29 @@ AMItemChest::AMItemChest()
 	LidMesh->SetupAttachment(BaseMesh);
 	
 	TargetPitch = 0;
+	SetReplicates(true);
 }
 
-void AMItemChest::Interact_Implementation(APawn* InstigatorPawn) {
 
-	LidMesh->SetRelativeRotation(FRotator(0 , 0, TargetPitch));
+
+void AMItemChest::Interact_Implementation(APawn* InstigatorPawn) {
+	
+	bLidOpened = !bLidOpened;
+
+	OnRip_LidOpened();
+}
+
+void AMItemChest::OnRip_LidOpened()
+{
+
+	float CurrentPitch = bLidOpened ? TargetPitch : 0;
+	LidMesh->SetRelativeRotation(FRotator(0, 0, CurrentPitch));
+}
+void AMItemChest::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const {
+
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AMItemChest, bLidOpened);
 }
 
 

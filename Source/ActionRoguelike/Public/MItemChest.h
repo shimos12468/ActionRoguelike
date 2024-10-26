@@ -23,6 +23,12 @@ public:
 
 protected:
 
+	UPROPERTY(ReplicatedUsing="OnRip_LidOpened", BlueprintReadOnly)
+	bool bLidOpened;
+
+	UFUNCTION()
+	void OnRip_LidOpened();
+
 	UPROPERTY(EditAnywhere)
 	float TargetPitch;
 
