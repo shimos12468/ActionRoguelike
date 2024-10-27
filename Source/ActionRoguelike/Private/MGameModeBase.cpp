@@ -12,7 +12,7 @@
 #include "MCharacter.h"
 #include "MPlayerState.h"
 
-static TAutoConsoleVariable<bool>CVarSpawnBots(TEXT("mu.SpawnBots"), true, TEXT("Enable/Disable Spawning bots via timer"), ECVF_Cheat);
+static TAutoConsoleVariable<bool>CVarSpawnBots(TEXT("mu.SpawnBots"), false, TEXT("Enable/Disable Spawning bots via timer"), ECVF_Cheat);
 
 AMGameModeBase::AMGameModeBase()
 {
@@ -139,8 +139,6 @@ void AMGameModeBase::RespawnPlayerElapsed(AController* Controller)
 	if (ensure(Controller)) {
 
 		Controller->UnPossess();
-
-		
 		RestartPlayer(Controller);
 		
 	}

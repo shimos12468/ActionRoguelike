@@ -4,6 +4,7 @@
 #include "MAttributeComponent.h"
 #include "MGameModeBase.h"
 #include "MathUtil.h"
+#include "Net/UnrealNetwork.h"
 
 
 static TAutoConsoleVariable<float>CVarDamageMultiplier(TEXT("mu.DamageMultiplier"), 1.f, TEXT("Global Multiply Damage Modified for AttributeComponent"), ECVF_Cheat);
@@ -17,7 +18,7 @@ UMAttributeComponent::UMAttributeComponent()
 	MaxRage = 50;
 	Rage = 0;
 	KilledCreditAmount = 30;
-
+	SetIsReplicatedByDefault(true);
 }
 bool UMAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delta)
 {
@@ -38,8 +39,12 @@ bool UMAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 	Health += Delta;
 	Health= FMath::Clamp(Health,0.0f,MaxHealth);
 	float ActualDelta = Health - OldHealth;
-	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
+	
+	if (ActualDelta != 0) {
 
+		//OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
+		MulticastHealthChanged(InstigatorActor, Health, ActualDelta);
+	}
 	if (Delta < 0 && Health <= 0) {
 
 		AMGameModeBase* GM = GetWorld()->GetAuthGameMode<AMGameModeBase>();
@@ -53,6 +58,7 @@ bool UMAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 
 	return ActualDelta!=0;
 }
+
 
 UMAttributeComponent* UMAttributeComponent::GetAttributies(AActor* FromActor)
 {
@@ -124,4 +130,15 @@ bool UMAttributeComponent::IsPlayerFullHealth()
 {
 	return Health == MaxHealth;
 }
+void UMAttributeComponent::MulticastHealthChanged_Implementation(AActor* InstigatorActor, float NewHealth, float Delta)
+{
+	OnHealthChanged.Broadcast(InstigatorActor,this,NewHealth, Delta);
+}
 
+void UMAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const {
+
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UMAttributeComponent, Health);
+	DOREPLIFETIME(UMAttributeComponent, MaxHealth);
+}

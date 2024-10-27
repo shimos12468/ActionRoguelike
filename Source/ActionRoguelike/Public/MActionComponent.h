@@ -29,6 +29,9 @@ public:
 	void RemoveAction(UMAction* Action);
 
 
+	UFUNCTION(Server,Reliable)
+	void ServerStartAction(AActor* Instigator, FName ActionName);
+
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	bool StartActionByName(AActor* Instigator,FName ActionName);
 

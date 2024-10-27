@@ -14,6 +14,7 @@ AMPowerup::AMPowerup()
 	LidMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LidMesh"));
 	LidMesh->SetupAttachment(BaseMesh);
 	DeactivationDuration = 10.0f;
+	SetReplicates(true);
 }
 
 void AMPowerup::Deactivate()

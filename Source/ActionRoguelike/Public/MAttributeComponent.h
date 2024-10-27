@@ -28,10 +28,10 @@ public:
 
 public:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Atributes")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated,Category = "Atributes")
 	float MaxHealth;
 	
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category ="Atributes")
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Replicated,Category ="Atributes")
 	float Health;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Atributes")
@@ -43,6 +43,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Atributes")
 	float KilledCreditAmount;
 
+
+	UFUNCTION(NetMulticast,Reliable)
+	void MulticastHealthChanged(AActor* InstigatorActor,float NewHealth,float Delta);
 
 	UFUNCTION(BlueprintCallable)
 	bool Kill(AActor* InstigatorActor);

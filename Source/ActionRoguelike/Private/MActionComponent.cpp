@@ -11,6 +11,8 @@ UMActionComponent::UMActionComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+
+	SetIsReplicatedByDefault(true);
 	// ...
 }
 
@@ -91,6 +93,11 @@ bool UMActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 				continue;
 			}
 
+			if (!GetOwner()->HasAuthority()) {
+
+				ServerStartAction_Implementation(Instigator, ActionName);
+			}
+
 			Action->StartAction(Instigator);
 			return true;
 		}
@@ -124,5 +131,10 @@ TArray<UMAction*> UMActionComponent::GetActionsList()
 {
 	return Actions;
 	
+}
+
+void UMActionComponent::ServerStartAction_Implementation(AActor* Instigator, FName ActionName)
+{
+	StartActionByName(Instigator, ActionName);
 }
 
