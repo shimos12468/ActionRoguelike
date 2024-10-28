@@ -49,10 +49,13 @@ protected:
 	UPROPERTY(EditAnywhere,Category = "Actions")
 	TArray<TSubclassOf<UMAction>>DefaultActions;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TArray<UMAction*>Actions;
 	
 	virtual void BeginPlay() override;
+
+
+	bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
 
 public:	
 
