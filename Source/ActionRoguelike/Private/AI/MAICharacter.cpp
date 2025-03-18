@@ -83,18 +83,9 @@ void AMAICharacter::SetTargetActor(AActor* NewTargetActor)
 	AAIController* AIC = Cast<AAIController>(GetController());
 
     if (TargetActor == nullptr||TargetActor!=NewTargetActor) {
-		
-        if (SpottedPlayerWidget == nullptr) {
-
-            SpottedPlayerWidget= CreateWidget<UMWorldUserWidget>(GetWorld(), playerSpottedWidgetClass);
-        }
-
-        SpottedPlayerWidget->AttachedActor = this;
-        SpottedPlayerWidget->AddToViewport();
-
-        GetWorldTimerManager().SetTimer(TimerHandle_DeactivateSpottedPlayerWidget, this, &AMAICharacter::DeactivateSpottedPlayerWidget, ActivationDuration);
 
         TargetActor = NewTargetActor;
+        
     }
 
 
@@ -105,15 +96,23 @@ void AMAICharacter::SetTargetActor(AActor* NewTargetActor)
 void AMAICharacter::OnPawnSeen(APawn* Pawn)
 {
 
-    SetTargetActor(Pawn);
 
+    if (GetTargetActor() != Pawn) {
 
-    
+        SetTargetActor(Pawn);
+		if (SpottedPlayerWidget == nullptr) {
 
-    AAIController* AIC = Cast<AAIController>(GetController());
-    UBlackboardComponent* BBComp = AIC->GetBlackboardComponent();
-    BBComp->SetValueAsFloat("HealthLimit", 60);
-    DrawDebugString(GetWorld(), GetActorLocation(), "Player Spotted", nullptr, FColor::Red, 4.0f, true);
+			SpottedPlayerWidget = CreateWidget<UMWorldUserWidget>(GetWorld(), playerSpottedWidgetClass);
+        }
+		SpottedPlayerWidget->AttachedActor = this;
+		SpottedPlayerWidget->AddToViewport(10);
+		GetWorldTimerManager().SetTimer(TimerHandle_DeactivateSpottedPlayerWidget, this, &AMAICharacter::DeactivateSpottedPlayerWidget, ActivationDuration);
+		AAIController* AIC = Cast<AAIController>(GetController());
+		UBlackboardComponent* BBComp = AIC->GetBlackboardComponent();
+		BBComp->SetValueAsFloat("HealthLimit", 60);
+    }
+
+  
     
 }
 
@@ -123,4 +122,18 @@ void AMAICharacter::DeactivateSpottedPlayerWidget()
     SpottedPlayerWidget->RemoveFromViewport();
 }
 
+AActor* AMAICharacter::GetTargetActor()
+{
+	AAIController* AIC = Cast<AAIController>(GetController());
+	
+    if (AIC)
+    {
+        UBlackboardComponent* BBComp = AIC->GetBlackboardComponent();
+    
+        return Cast<AActor>(BBComp->GetValueAsObject("TargetActor"));
+    }
+    
+    return nullptr;
+
+}
 

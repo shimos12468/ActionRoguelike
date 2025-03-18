@@ -12,14 +12,19 @@ void AGrantAbilityMPowerup::Interact_Implementation(APawn* InstigatorPawn)
 
 
 		if (!BaseMesh->IsVisible())
+
+		if (ActionComp->GetAction(ActionToAdd))
+		{
+
+
 			return;
-
+		}
+			
 		
 		
-
-			ActionComp->AddAction(this, ActionToAdd);
-			GetWorldTimerManager().SetTimer(TimerHandle_DeactivateMesh, this, &AGrantAbilityMPowerup::Activate, DeactivationDuration);
-			Deactivate();
+		ActionComp->AddAction(InstigatorPawn, ActionToAdd);
+		GetWorldTimerManager().SetTimer(TimerHandle_DeactivateMesh, this, &AGrantAbilityMPowerup::Activate, DeactivationDuration);
+		Deactivate();
 		
 
 	}

@@ -55,6 +55,9 @@ protected:
 	UFUNCTION()
 	void DeactivateSpottedPlayerWidget();
 
+	UFUNCTION()
+	AActor* GetTargetActor();
+
 	virtual void PostInitializeComponents() override;
 	UFUNCTION()
 		void OnHealthChanged(AActor* InstigatorActor, UMAttributeComponent* OwningComp, float NewHealth, float Delta);

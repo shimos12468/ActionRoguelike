@@ -41,6 +41,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	TArray<UMAction*> GetActionsList();
 
+	UFUNCTION(BlueprintCallable, Category = "Action")
+	UMAction* GetAction(TSubclassOf<UMAction>ActionClass) const ;
+
+
 	UMActionComponent();
 
 

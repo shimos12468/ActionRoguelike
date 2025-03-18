@@ -154,6 +154,16 @@ TArray<UMAction*> UMActionComponent::GetActionsList()
 	
 }
 
+UMAction* UMActionComponent::GetAction(TSubclassOf<UMAction>ActionClass)const
+{
+	for (UMAction* Action : Actions) {
+		if (Action && Action->IsA(ActionClass)) {
+			return Action;
+		}
+	}
+	return nullptr;
+}
+
 void UMActionComponent::ServerStartAction_Implementation(AActor* Instigator, FName Action)
 {
 	StartActionByName(Instigator, Action);
