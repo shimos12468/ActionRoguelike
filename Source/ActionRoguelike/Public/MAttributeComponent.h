@@ -34,10 +34,10 @@ public:
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Replicated,Category ="Atributes")
 	float Health;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Atributes")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly ,Replicated, Category = "Atributes")
 	float MaxRage;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Atributes")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,Replicated, Category = "Atributes")
 	float Rage;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Atributes")
@@ -46,7 +46,9 @@ public:
 
 	UFUNCTION(NetMulticast,Reliable)
 	void MulticastHealthChanged(AActor* InstigatorActor,float NewHealth,float Delta);
-
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRageChanged(AActor* InstigatorActor, float CurrentRage, float RageDelta);
 	UFUNCTION(BlueprintCallable)
 	bool Kill(AActor* InstigatorActor);
 

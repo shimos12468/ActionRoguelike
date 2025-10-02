@@ -20,11 +20,15 @@ class ACTIONROGUELIKE_API AMPlayerState : public APlayerState
 
 protected:
 
-	UPROPERTY(EditAnywhere ,BlueprintReadWrite , Category = "Attributes")
+	UPROPERTY(EditAnywhere ,Replicated,BlueprintReadWrite , Category = "Attributes")
 	int PlayerCredits;
 
 
 public:
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastCreditsChanged(AActor* InstigatorActor, int NewCredit);
+
 	UFUNCTION(BlueprintCallable, Category = "Attribute")
 	int GetCredit();
 	UFUNCTION(BlueprintCallable, Category = "Attribute")

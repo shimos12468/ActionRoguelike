@@ -11,6 +11,7 @@ class UPawnSensingComponent;
 class UUserWidget;
 class UMWorldUserWidget;
 class UMActionComponent;
+class AAIController;
 UCLASS()
 class ACTIONROGUELIKE_API AMAICharacter : public ACharacter
 {
@@ -23,7 +24,13 @@ public:
 protected:
 	
 	UMWorldUserWidget* ActiveWidget;
+
 	UMWorldUserWidget* SpottedPlayerWidget;
+	
+	
+	AAIController* AIController;
+	
+	
 	UPROPERTY(EditDefaultsOnly,Category = "UI")
 	TSubclassOf<UUserWidget> HealthBarWidgetClass;
 
@@ -41,7 +48,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Attributes")
 	float ActivationDuration;
+	
 
+	
+	
 	AActor* TargetActor;
 
 	FTimerHandle TimerHandle_DeactivateSpottedPlayerWidget;
@@ -59,6 +69,12 @@ protected:
 	AActor* GetTargetActor();
 
 	virtual void PostInitializeComponents() override;
+
+	virtual void BeginPlay() override;
 	UFUNCTION()
 		void OnHealthChanged(AActor* InstigatorActor, UMAttributeComponent* OwningComp, float NewHealth, float Delta);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastPawnSeen();
+
 };

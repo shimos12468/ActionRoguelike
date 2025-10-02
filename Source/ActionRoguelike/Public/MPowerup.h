@@ -25,9 +25,15 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 		UStaticMeshComponent* BaseMesh;
 
+	UPROPERTY(ReplicatedUsing = "OnRip_CoinConsumed", BlueprintReadOnly)
+	bool Visiable;
+		
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 		UStaticMeshComponent* LidMesh;
 	UPROPERTY(EditAnywhere)
 	float DeactivationDuration;
+	
 
+	UFUNCTION()
+	void OnRip_CoinConsumed();
 };

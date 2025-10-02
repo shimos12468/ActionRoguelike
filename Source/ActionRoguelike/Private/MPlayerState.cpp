@@ -2,22 +2,32 @@
 
 
 #include "MPlayerState.h"
-
+#include "Net/UnrealNetwork.h"
 
 void AMPlayerState::AddCredit(AActor* CreditSource, int Amount)
 {
-	PlayerCredits += Amount;
-	OnCreditsChanged.Broadcast(CreditSource, this->GetOwner(), PlayerCredits);
+	MulticastCreditsChanged_Implementation(CreditSource, Amount);
 }
 
 void AMPlayerState::RemoveCredit(AActor* CreditSource, int Amount)
 {
-	PlayerCredits -= Amount;
+	MulticastCreditsChanged_Implementation(CreditSource, -Amount);
+}
 
-	OnCreditsChanged.Broadcast(CreditSource, this->GetOwner(), PlayerCredits);
+void AMPlayerState::MulticastCreditsChanged_Implementation(AActor* InstigatorActor, int NewCredits)
+{
+	PlayerCredits += NewCredits;
+	OnCreditsChanged.Broadcast(InstigatorActor, this->GetOwner(), PlayerCredits);
 }
 
 int AMPlayerState::GetCredit()
 {
 	return PlayerCredits;
+}
+void AMPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const {
+
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AMPlayerState, PlayerCredits);
+	
 }

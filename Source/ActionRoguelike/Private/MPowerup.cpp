@@ -3,6 +3,8 @@
 
 #include "MPowerup.h"
 
+
+#include "Net/UnrealNetwork.h"
 // Sets default values
 AMPowerup::AMPowerup()
 {
@@ -19,14 +21,39 @@ AMPowerup::AMPowerup()
 
 void AMPowerup::Deactivate()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Deactivated"));
-	BaseMesh->SetVisibility(false);
-	LidMesh->SetVisibility(false);
+	Visiable = false;
+	OnRip_CoinConsumed();
+
 }
 
 void AMPowerup::Activate()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Activated"));
-	BaseMesh->SetVisibility(true);
-	LidMesh->SetVisibility(true);
+	Visiable = true;
+	OnRip_CoinConsumed();
+}
+
+void AMPowerup::OnRip_CoinConsumed()
+{
+	if (Visiable) {
+		UE_LOG(LogTemp, Warning, TEXT("ACTIVATED"));
+		BaseMesh->SetVisibility(true);
+		BaseMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		LidMesh->SetVisibility(true);
+		LidMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	}
+	else {
+
+		UE_LOG(LogTemp, Warning, TEXT("DEACTIVATED"));
+		BaseMesh->SetVisibility(false);
+		BaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		LidMesh->SetVisibility(false);
+		LidMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+}
+
+void AMPowerup::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const {
+
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AMPowerup, Visiable);
 }

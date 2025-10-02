@@ -17,12 +17,9 @@ class ACTIONROGUELIKE_API AMCoinPickup : public AMPowerup , public IMGameplayInt
 
 public:
 	UPROPERTY(EditAnywhere, Category = "Attributes")
-	float CreditAmount;
-		
 	
+	float CreditAmount;	
+
+
 	void Interact_Implementation(APawn* InstigatorPawn);
-	
-	
-
-
 };

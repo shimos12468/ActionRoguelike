@@ -83,14 +83,22 @@ void UMAttributeComponent::RemoveRage(AActor* InstigatorActor,float RageCost)
 {
 	Rage -= RageCost;
 	Rage = FMath::Clamp(Rage, 0, MaxRage);
-	OnRageChanged.Broadcast(InstigatorActor, this, Rage, RageCost);
+	//OnRageChanged.Broadcast(InstigatorActor, this, Rage, RageCost);
+	MulticastRageChanged_Implementation(InstigatorActor, Rage, RageCost);
 }
 
 void UMAttributeComponent::AddRage(AActor* InstigatorActor,float RageAmount)
 {
 	Rage += RageAmount;
 	Rage = FMath::Clamp(Rage, 0, MaxRage);
-	OnRageChanged.Broadcast(InstigatorActor, this, Rage, RageAmount);
+	//OnRageChanged.Broadcast(InstigatorActor, this, Rage, RageAmount);
+	MulticastRageChanged_Implementation(InstigatorActor, Rage, RageAmount);
+}
+
+
+void UMAttributeComponent::MulticastRageChanged_Implementation(AActor* InstigatorActor, float CurrentRage, float RageDelta)
+{
+	OnRageChanged.Broadcast(InstigatorActor, this, CurrentRage, RageDelta);
 }
 
 
@@ -141,4 +149,6 @@ void UMAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 
 	DOREPLIFETIME(UMAttributeComponent, Health);
 	DOREPLIFETIME(UMAttributeComponent, MaxHealth);
+	DOREPLIFETIME(UMAttributeComponent, Rage);
+	DOREPLIFETIME(UMAttributeComponent, MaxRage);
 }

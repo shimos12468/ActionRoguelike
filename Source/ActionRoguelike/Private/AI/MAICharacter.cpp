@@ -12,6 +12,8 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "MActionComponent.h"
+#include "Net/UnrealNetwork.h"
+#include <AI/MAIController.h>
 // Sets default values
 AMAICharacter::AMAICharacter()
 {
@@ -22,16 +24,21 @@ AMAICharacter::AMAICharacter()
     ActivationDuration = 1.0f;
     GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
     GetMesh()->SetGenerateOverlapEvents(true);
+    SetReplicates(true);
 }
 
 void AMAICharacter::PostInitializeComponents()
 {
     Super::PostInitializeComponents();
-
+  
     PawnSensingComponent->OnSeePawn.AddDynamic(this, &AMAICharacter::OnPawnSeen);
     AttributeComp->OnHealthChanged.AddDynamic(this, &AMAICharacter::OnHealthChanged);
 }
-
+void AMAICharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	AIController = Cast<AAIController>(GetController());
+}
 void AMAICharacter::OnHealthChanged(AActor* InstigatorActor, UMAttributeComponent* OwningComp, float NewHealth, float Delta)
 {
     if (Delta < 0.0f) {
@@ -56,10 +63,10 @@ void AMAICharacter::OnHealthChanged(AActor* InstigatorActor, UMAttributeComponen
 
         if (NewHealth <= 0.0f) {
 
-            AAIController* AIC = Cast<AAIController>(GetController());
-            if (AIC) {
+           
+            if (AIController) {
 
-                AIC->GetBrainComponent()->StopLogic("Killed");
+                AIController->GetBrainComponent()->StopLogic("Killed");
             }
 
             // original way for death animation
@@ -77,36 +84,38 @@ void AMAICharacter::OnHealthChanged(AActor* InstigatorActor, UMAttributeComponen
     
 }
 
+void AMAICharacter::MulticastPawnSeen_Implementation()
+{
+	if (SpottedPlayerWidget == nullptr) {
+
+		SpottedPlayerWidget = CreateWidget<UMWorldUserWidget>(GetWorld(), playerSpottedWidgetClass);
+	}
+	SpottedPlayerWidget->AttachedActor = Cast<AMAICharacter>(this);
+	SpottedPlayerWidget->AddToViewport(10);
+	GetWorldTimerManager().SetTimer(TimerHandle_DeactivateSpottedPlayerWidget, Cast<AMAICharacter>(this), &AMAICharacter::DeactivateSpottedPlayerWidget, ActivationDuration);
+}
+
 
 void AMAICharacter::SetTargetActor(AActor* NewTargetActor)
 {
-	AAIController* AIC = Cast<AAIController>(GetController());
-
-    if (TargetActor == nullptr||TargetActor!=NewTargetActor) {
-
+    if (TargetActor == nullptr || TargetActor != NewTargetActor) {
         TargetActor = NewTargetActor;
-        
     }
-
-
-    AIC->GetBlackboardComponent()->SetValueAsObject("TargetActor", NewTargetActor);
-
+    AMAIController* AIC = Cast<AMAIController>(GetController());
+    if (AIC && AIC->GetBlackboardComponent())
+    {
+        AIC->GetBlackboardComponent()->SetValueAsObject("TargetActor", TargetActor);
+    }
 }
 
 void AMAICharacter::OnPawnSeen(APawn* Pawn)
 {
-
+    
 
     if (GetTargetActor() != Pawn) {
 
         SetTargetActor(Pawn);
-		if (SpottedPlayerWidget == nullptr) {
-
-			SpottedPlayerWidget = CreateWidget<UMWorldUserWidget>(GetWorld(), playerSpottedWidgetClass);
-        }
-		SpottedPlayerWidget->AttachedActor = this;
-		SpottedPlayerWidget->AddToViewport(10);
-		GetWorldTimerManager().SetTimer(TimerHandle_DeactivateSpottedPlayerWidget, this, &AMAICharacter::DeactivateSpottedPlayerWidget, ActivationDuration);
+        MulticastPawnSeen_Implementation();
 		AAIController* AIC = Cast<AAIController>(GetController());
 		UBlackboardComponent* BBComp = AIC->GetBlackboardComponent();
 		BBComp->SetValueAsFloat("HealthLimit", 60);
@@ -114,7 +123,7 @@ void AMAICharacter::OnPawnSeen(APawn* Pawn)
 
   
     
-}
+} 
 
 void AMAICharacter::DeactivateSpottedPlayerWidget()
 {
