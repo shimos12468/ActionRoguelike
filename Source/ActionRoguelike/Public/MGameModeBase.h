@@ -13,6 +13,7 @@
 class UEnvQuery;
 class UEnvQueryInstanceBlueprintWrapper;
 class UCurveFloat;
+class UMSaveGame;
 UCLASS()
 class ACTIONROGUELIKE_API AMGameModeBase : public AGameModeBase
 {
@@ -21,6 +22,14 @@ class ACTIONROGUELIKE_API AMGameModeBase : public AGameModeBase
 protected:
 
 	
+
+	UPROPERTY()
+	UMSaveGame* CurrentSaveGame;
+
+	UPROPERTY()
+	FString SlotName;
+
+
 	UPROPERTY(EditDefaultsOnly,Category="AI")
 	UEnvQuery* SpawnBotQuery;
 	
@@ -57,18 +66,26 @@ protected:
 	UFUNCTION()
 	void OnSpawnPowerUpQuaryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
 
-	
 public:
 
 	
 	UFUNCTION()
 	virtual void OnActorKilled(AActor* VictimActor , AActor* Killer);
+	
+	 void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)override;
 
+	 void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 	
 	UFUNCTION(Exec)
 	void KillAll();
 
 	AMGameModeBase();
 	virtual void StartPlay() override;
+
+
+	UFUNCTION(BlueprintCallable, Category = "SaveGame")
+	void WriteSaveGame();
+
+	void LoadSaveGame();
 	
 };

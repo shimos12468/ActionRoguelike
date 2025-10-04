@@ -38,7 +38,7 @@ EBTNodeResult::Type UMBTTask_Heal::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 		AMPlayerState* PS = Target->GetPlayerState<AMPlayerState>();
 		if (PS) {
 
-			PS->AddCredit(MyPawn, 20);
+			PS->AddCredit(20);
 		}
 		
 	}

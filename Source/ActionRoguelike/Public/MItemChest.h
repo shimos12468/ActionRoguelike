@@ -15,16 +15,17 @@ class ACTIONROGUELIKE_API AMItemChest : public AActor ,public IMGameplayInterfac
 	GENERATED_BODY()
 
 	void Interact_Implementation(APawn* InstigatorPawn);
+	void OnActorLoaded_Implementation();
 public:	
 	// Sets default values for this actor's properties
 	AMItemChest();
 
+	UPROPERTY(ReplicatedUsing="OnRip_LidOpened", BlueprintReadOnly ,SaveGame)
+	bool bLidOpened;
 	
 
 protected:
 
-	UPROPERTY(ReplicatedUsing="OnRip_LidOpened", BlueprintReadOnly)
-	bool bLidOpened;
 
 	UFUNCTION()
 	void OnRip_LidOpened();

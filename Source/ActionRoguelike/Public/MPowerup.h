@@ -20,20 +20,22 @@ public:
 	void Activate();
 
 	FTimerHandle TimerHandle_DeactivateMesh;
-
+	
 protected:
 	UPROPERTY(VisibleAnywhere)
 		UStaticMeshComponent* BaseMesh;
 
-	UPROPERTY(ReplicatedUsing = "OnRip_CoinConsumed", BlueprintReadOnly)
+	UPROPERTY(ReplicatedUsing = "OnRip_ShowPowerup", BlueprintReadOnly)
 	bool Visiable;
-		
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-		UStaticMeshComponent* LidMesh;
-	UPROPERTY(EditAnywhere)
-	float DeactivationDuration;
-	
 
 	UFUNCTION()
-	void OnRip_CoinConsumed();
+	void OnRip_ShowPowerup();
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UStaticMeshComponent* LidMesh;
+	
+	UPROPERTY(EditAnywhere, Category = "Powerup")
+	float RespawnTime;
+	
+	
 };

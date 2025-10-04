@@ -21,16 +21,11 @@ void AMCoinPickup::Interact_Implementation(APawn* InstigatorPawn)
 
 		
 		AMPlayerState* PS = InstigatorPawn->GetPlayerState<AMPlayerState>();
-		
-		
-		GetWorldTimerManager().SetTimer(TimerHandle_DeactivateMesh, this, &AMCoinPickup::Activate, DeactivationDuration);
 		if (PS) {
 
-			PS->AddCredit(this, CreditAmount);
+			PS->AddCredit(CreditAmount);
 		}
 		Deactivate();
-
-		
 	}
 
 }

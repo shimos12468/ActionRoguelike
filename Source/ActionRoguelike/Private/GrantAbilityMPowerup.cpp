@@ -23,7 +23,6 @@ void AGrantAbilityMPowerup::Interact_Implementation(APawn* InstigatorPawn)
 		
 		
 		ActionComp->AddAction(InstigatorPawn, ActionToAdd);
-		GetWorldTimerManager().SetTimer(TimerHandle_DeactivateMesh, this, &AGrantAbilityMPowerup::Activate, DeactivationDuration);
 		Deactivate();
 		
 

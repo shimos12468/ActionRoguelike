@@ -33,7 +33,8 @@ void UMAction::StartAction_Implementation(AActor* Instigator)
 	UMActionComponent* ActionComp = GetOwningComponent();
 
 	ActionComp->ActiveGameplayTags.AppendTags(GrantsTags);
-	bIsRunning = true;
+	RepData.bIsRunning = true;
+	RepData.instigator = Instigator;
 }
 
 void UMAction::StopAction_Implementation(AActor* Instigator)
@@ -44,7 +45,8 @@ void UMAction::StopAction_Implementation(AActor* Instigator)
 	
 	UMActionComponent* ActionComp = GetOwningComponent();
 	ActionComp->ActiveGameplayTags.RemoveTags(GrantsTags);
-	bIsRunning = false;
+	RepData.bIsRunning = false;
+	RepData.instigator = Instigator;
 }
 
 UWorld* UMAction::GetWorld() const
@@ -67,20 +69,20 @@ void UMAction::Initialize(UMActionComponent* NewActionComp)
 	ActionComponent = NewActionComp;
 }
 
-void UMAction::OnRip_IsRunning()
+void UMAction::OnRip_RepData()
 {
-	if (bIsRunning) {
+	if (RepData.bIsRunning) {
 
-		StartAction(nullptr);
+		StartAction(RepData.instigator);
 	}
 	else {
-		StopAction(nullptr);
+		StopAction(RepData.instigator);
 	}
 }
 
 bool UMAction::IsRunning() const
 {
-	return bIsRunning;
+	return RepData.bIsRunning;
 }
 
 FName UMAction::GetActionName()
@@ -93,6 +95,6 @@ void UMAction::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLi
 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UMAction, bIsRunning);
+	DOREPLIFETIME(UMAction, RepData);
 	DOREPLIFETIME(UMAction, ActionComponent);
 }

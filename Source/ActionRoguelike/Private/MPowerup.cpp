@@ -15,41 +15,31 @@ AMPowerup::AMPowerup()
 
 	LidMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LidMesh"));
 	LidMesh->SetupAttachment(BaseMesh);
-	DeactivationDuration = 10.0f;
+	RespawnTime = 10.0f;
 	SetReplicates(true);
 }
 
 void AMPowerup::Deactivate()
 {
 	Visiable = false;
-	OnRip_CoinConsumed();
-
+	OnRip_ShowPowerup();
+	GetWorldTimerManager().SetTimer(TimerHandle_DeactivateMesh, this, &AMPowerup::Activate, RespawnTime);
 }
 
 void AMPowerup::Activate()
 {
 	Visiable = true;
-	OnRip_CoinConsumed();
+	OnRip_ShowPowerup();
 }
 
-void AMPowerup::OnRip_CoinConsumed()
+void AMPowerup::OnRip_ShowPowerup()
 {
-	if (Visiable) {
-		UE_LOG(LogTemp, Warning, TEXT("ACTIVATED"));
-		BaseMesh->SetVisibility(true);
-		BaseMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		LidMesh->SetVisibility(true);
-		LidMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	}
-	else {
-
-		UE_LOG(LogTemp, Warning, TEXT("DEACTIVATED"));
-		BaseMesh->SetVisibility(false);
-		BaseMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		LidMesh->SetVisibility(false);
-		LidMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	}
+	SetActorEnableCollision(Visiable);
+	// Set visibility on root and all children
+	RootComponent->SetVisibility(Visiable, true);
+	
 }
+
 
 void AMPowerup::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const {
 

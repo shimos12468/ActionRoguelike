@@ -36,26 +36,29 @@ bool UMAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 	}
 
 	float OldHealth = Health;
-	Health += Delta;
-	Health= FMath::Clamp(Health,0.0f,MaxHealth);
-	float ActualDelta = Health - OldHealth;
-	
-	if (ActualDelta != 0) {
+	float NewHealth = Health + Delta;
+	float ActualDelta = NewHealth - OldHealth;
 
-		//OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
-		MulticastHealthChanged(InstigatorActor, Health, ActualDelta);
-	}
-	if (Delta < 0 && Health <= 0) {
+	if (GetOwner()->HasAuthority()) {
+		
+		Health= FMath::Clamp(NewHealth,0.0f,MaxHealth);
+		if (ActualDelta != 0) {
 
-		AMGameModeBase* GM = GetWorld()->GetAuthGameMode<AMGameModeBase>();
-
-		if (GM) {
-
-			GM->OnActorKilled(GetOwner(), InstigatorActor);
+			//OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
+			MulticastHealthChanged(InstigatorActor, Health, ActualDelta);
 		}
+		if (Delta < 0 && Health <= 0) {
 
+			AMGameModeBase* GM = GetWorld()->GetAuthGameMode<AMGameModeBase>();
+
+			if (GM) {
+
+				GM->OnActorKilled(GetOwner(), InstigatorActor);
+			}
+
+		}
 	}
-
+	
 	return ActualDelta!=0;
 }
 
@@ -81,18 +84,25 @@ bool UMAttributeComponent::IsActorAlive(AActor* Actor)
 
 void UMAttributeComponent::RemoveRage(AActor* InstigatorActor,float RageCost)
 {
-	Rage -= RageCost;
-	Rage = FMath::Clamp(Rage, 0, MaxRage);
-	//OnRageChanged.Broadcast(InstigatorActor, this, Rage, RageCost);
-	MulticastRageChanged_Implementation(InstigatorActor, Rage, RageCost);
+	
+		Rage -= RageCost;
+		Rage = FMath::Clamp(Rage, 0, MaxRage);
+		//OnRageChanged.Broadcast(InstigatorActor, this, Rage, RageCost);
+		MulticastRageChanged_Implementation(InstigatorActor, Rage, RageCost);
+
+	
 }
 
 void UMAttributeComponent::AddRage(AActor* InstigatorActor,float RageAmount)
 {
-	Rage += RageAmount;
-	Rage = FMath::Clamp(Rage, 0, MaxRage);
-	//OnRageChanged.Broadcast(InstigatorActor, this, Rage, RageAmount);
-	MulticastRageChanged_Implementation(InstigatorActor, Rage, RageAmount);
+	
+		Rage += RageAmount;
+		Rage = FMath::Clamp(Rage, 0, MaxRage);
+		//OnRageChanged.Broadcast(InstigatorActor, this, Rage, RageAmount);
+
+		MulticastRageChanged_Implementation(InstigatorActor, Rage, RageAmount);
+
+	
 }
 
 

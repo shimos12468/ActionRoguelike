@@ -3,15 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "MGameModeBase.h"
 #include "GameFramework/PlayerState.h"
 #include "MPlayerState.generated.h"
 
+
+
+
+class UMSaveGame;
 /**
  * 
  */
-
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCreditsChanged, AActor*, InstigatorActor, AActor*, OwningPlayer, float, NewCredits);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnCreditsChanged, AMPlayerState*, PlayerState, int32, NewCredits, int32, Delta);
 UCLASS()
 class ACTIONROGUELIKE_API AMPlayerState : public APlayerState
 {
@@ -20,21 +23,27 @@ class ACTIONROGUELIKE_API AMPlayerState : public APlayerState
 
 protected:
 
-	UPROPERTY(EditAnywhere ,Replicated,BlueprintReadWrite , Category = "Attributes")
+	UPROPERTY(EditDefaultsOnly,ReplicatedUsing="OnRep_Credits" , Category = "Attributes")
 	int PlayerCredits;
 
-
 public:
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastCreditsChanged(AActor* InstigatorActor, int NewCredit);
-
+	
 	UFUNCTION(BlueprintCallable, Category = "Attribute")
 	int GetCredit();
 	UFUNCTION(BlueprintCallable, Category = "Attribute")
-	void AddCredit(AActor* CreditSource, int Amount);
+	void AddCredit(int Amount);
 	UFUNCTION(BlueprintCallable ,Category = "Attribute")
-	void RemoveCredit(AActor* CreditSource, int Amount);
+	void RemoveCredit(int Amount);
+	UFUNCTION()
+	void OnRep_Credits(int NewCredits);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void SavePlayerState(UMSaveGame* CurrentSaveGame);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void LoadPlayerState(UMSaveGame* CurrentSaveGame);
+
+
 	UPROPERTY(BlueprintAssignable)
 	FOnCreditsChanged OnCreditsChanged;
 

@@ -63,6 +63,15 @@ void UMActionComponent::AddAction(AActor* Instigator ,TSubclassOf<UMAction> Acti
 		return;
 	}
 
+
+
+
+	if (!GetOwner()->HasAuthority()) {
+
+		UE_LOG(LogTemp, Warning, TEXT("Client Attempting to add action [Class: %s]"), *GetNameSafe(ActionClass));
+		return;
+	}
+
 	UMAction* NewAction = NewObject<UMAction>(GetOwner(), ActionClass);
 	bool bAddAction = true;
 	for(UMAction* var : Actions)
@@ -97,6 +106,8 @@ void UMActionComponent::RemoveAction(UMAction* Action)
 
 	Actions.Remove(Action);
 }
+
+
 
 bool UMActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 {
@@ -140,6 +151,11 @@ bool UMActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 				continue;
 			}
 
+			if (!GetOwner()->HasAuthority()) {
+
+				ServerStopAction(Instigator, ActionName);
+			}
+
 			Action->StopAction(Instigator);
 			return true;
 		}
@@ -168,7 +184,10 @@ void UMActionComponent::ServerStartAction_Implementation(AActor* Instigator, FNa
 {
 	StartActionByName(Instigator, Action);
 }
-
+void UMActionComponent::ServerStopAction_Implementation(AActor* Instigator, FName ActionName)
+{
+	StopActionByName(Instigator, ActionName);
+}
 
 void UMActionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const {
 

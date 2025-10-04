@@ -3,26 +3,43 @@
 
 #include "MPlayerState.h"
 #include "Net/UnrealNetwork.h"
+#include "MSaveGame.h"
 
-void AMPlayerState::AddCredit(AActor* CreditSource, int Amount)
+void AMPlayerState::AddCredit(int Amount)
 {
-	MulticastCreditsChanged_Implementation(CreditSource, Amount);
+	PlayerCredits += Amount;
+	OnCreditsChanged.Broadcast(this, PlayerCredits, Amount);
 }
 
-void AMPlayerState::RemoveCredit(AActor* CreditSource, int Amount)
+void AMPlayerState::RemoveCredit(int Amount)
 {
-	MulticastCreditsChanged_Implementation(CreditSource, -Amount);
+	PlayerCredits -= Amount;
+	OnCreditsChanged.Broadcast(this, PlayerCredits, -Amount);
 }
 
-void AMPlayerState::MulticastCreditsChanged_Implementation(AActor* InstigatorActor, int NewCredits)
+void AMPlayerState::OnRep_Credits(int NewCredits)
 {
-	PlayerCredits += NewCredits;
-	OnCreditsChanged.Broadcast(InstigatorActor, this->GetOwner(), PlayerCredits);
+	OnCreditsChanged.Broadcast(this, NewCredits, NewCredits-PlayerCredits);
 }
 
 int AMPlayerState::GetCredit()
 {
 	return PlayerCredits;
+}
+void AMPlayerState::SavePlayerState_Implementation(UMSaveGame* CurrentSaveGame)
+{
+	if (CurrentSaveGame)
+	{
+		CurrentSaveGame->Credits = PlayerCredits;
+	}
+}
+
+void AMPlayerState::LoadPlayerState_Implementation(UMSaveGame* CurrentSaveGame)
+{
+	if (CurrentSaveGame)
+	{
+		AddCredit(CurrentSaveGame->Credits);
+	}
 }
 void AMPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps)const {
 
@@ -31,3 +48,4 @@ void AMPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	DOREPLIFETIME(AMPlayerState, PlayerCredits);
 	
 }
+

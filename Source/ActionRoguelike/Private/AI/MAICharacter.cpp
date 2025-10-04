@@ -115,12 +115,11 @@ void AMAICharacter::OnPawnSeen(APawn* Pawn)
     if (GetTargetActor() != Pawn) {
 
         SetTargetActor(Pawn);
-        MulticastPawnSeen_Implementation();
 		AAIController* AIC = Cast<AAIController>(GetController());
 		UBlackboardComponent* BBComp = AIC->GetBlackboardComponent();
 		BBComp->SetValueAsFloat("HealthLimit", 60);
+        MulticastPawnSeen_Implementation();
     }
-
   
     
 } 

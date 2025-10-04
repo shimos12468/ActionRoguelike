@@ -67,6 +67,8 @@ void AMCharacter::OnHealthChanged(AActor* InstigatorActor, UMAttributeComponent*
 	if (Delta < 0.0f && NewHealth <= 0.0f) {
 		APlayerController* pc = Cast<APlayerController>(GetController());
 		DisableInput(pc);
+
+		SetLifeSpan(5.0f);
 	}
 
 }

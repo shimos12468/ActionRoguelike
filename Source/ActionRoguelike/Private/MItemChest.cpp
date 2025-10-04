@@ -27,6 +27,11 @@ void AMItemChest::Interact_Implementation(APawn* InstigatorPawn) {
 	OnRip_LidOpened();
 }
 
+void AMItemChest::OnActorLoaded_Implementation()
+{
+	OnRip_LidOpened();
+}
+
 void AMItemChest::OnRip_LidOpened()
 {
 
