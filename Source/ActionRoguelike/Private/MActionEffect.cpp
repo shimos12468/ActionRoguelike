@@ -11,6 +11,7 @@
 UMActionEffect::UMActionEffect()
 {
 	bIsAutoStart = true;
+	
 }
 
 
