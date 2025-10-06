@@ -35,6 +35,8 @@ void UMAction::StartAction_Implementation(AActor* Instigator)
 	ActionComp->ActiveGameplayTags.AppendTags(GrantsTags);
 	RepData.bIsRunning = true;
 	RepData.instigator = Instigator;
+	TimeStarted = GetWorld()->TimeSeconds;
+	GetOwningComponent()->OnActionStarted.Broadcast(GetOwningComponent(),this);
 }
 
 void UMAction::StopAction_Implementation(AActor* Instigator)
@@ -47,6 +49,7 @@ void UMAction::StopAction_Implementation(AActor* Instigator)
 	ActionComp->ActiveGameplayTags.RemoveTags(GrantsTags);
 	RepData.bIsRunning = false;
 	RepData.instigator = Instigator;
+	GetOwningComponent()->OnActionStopped.Broadcast(GetOwningComponent(),this);
 }
 
 UWorld* UMAction::GetWorld() const

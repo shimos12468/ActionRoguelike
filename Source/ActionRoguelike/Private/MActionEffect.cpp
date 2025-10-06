@@ -15,6 +15,14 @@ UMActionEffect::UMActionEffect()
 }
 
 
+float UMActionEffect::GetTimeRemaining() const
+{
+	float EndTime = TimeStarted+Duration;
+	
+
+	return EndTime - GetWorld()->TimeSeconds	;
+}
+
 void UMActionEffect::StartAction_Implementation(AActor* Instigator)
 {
 	Super::StartAction_Implementation(Instigator);

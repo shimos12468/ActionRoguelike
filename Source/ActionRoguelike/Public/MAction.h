@@ -45,10 +45,12 @@ protected:
 		FGameplayTagContainer BlockedTags;
 
 
+UPROPERTY(EditDefaultsOnly,BlueprintReadOnly, Category = "UI")
+	UTexture2D* Icon;
 	UPROPERTY(ReplicatedUsing="OnRip_RepData")
 	FActionRepData RepData;
 
-
+float TimeStarted;
 
 
 public:

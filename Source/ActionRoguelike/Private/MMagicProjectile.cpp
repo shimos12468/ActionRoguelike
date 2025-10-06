@@ -78,7 +78,7 @@ void AMMagicProjectile::ApplyDamage(const FHitResult& Hit, AActor* OwnerActor, A
 
 		Explode();
 
-		if (ActionComp&&BurningActionClass&&HasAuthority()) {
+		if (ActionComp&&HasAuthority()) {
 			ActionComp->AddAction(GetInstigator(),BurningActionClass);
 		}
 	}
